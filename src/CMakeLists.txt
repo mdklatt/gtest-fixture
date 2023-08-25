@@ -1,7 +1,7 @@
 # Define targets.
 
 add_library(${name}
-    module.cpp
+        environ.cpp
 )
 add_library(googletest-fixture::googletest-fixture ALIAS googletest-fixture)
 

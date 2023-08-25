@@ -13,7 +13,7 @@ FetchContent_MakeAvailable(googletest)
 # Define targets.
 
 add_executable(test_${name}
-    test_module.cpp
+        test_envrion.cpp
 )
 target_link_libraries(test_${name}
 PRIVATE

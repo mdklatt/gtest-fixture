@@ -1,8 +1,27 @@
-==================
+##################
 googletest-fixture
-==================
+##################
 
-C++ library project created from the `mdklatt/cookiecutter-cpp-lib`_ template.
+Test fixtures for use with `GoogleTest`_.
+
+
+=====
+Usage
+=====
+
+Use these fixtures with ``testing::Test`` classes to manage resources during
+testing.
+
+
+Fixtures
+--------
+
+``EnvironFixture``
+
+Modify environment variables for testing. Changes will be rolled back when the
+fixture is destroyed. Note that changes to the environment are *not*
+thread-safe.
+
 
 
 ===========
@@ -37,4 +56,4 @@ Build documentation:
     $ make docs
 
 
-.. _mdklatt/cookiecutter-cpp-lib: https://github.com/mdklatt/cookiecutter-cpp-lib
+.. _GoogleTest: http://google.github.io/googletest/

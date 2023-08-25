@@ -2,7 +2,7 @@
  * Verify that the library is usable in an external CMake project by testing
  * that all headers are present and all modules are linkable.
  */
-#include "googletest-fixture/module.hpp"
+#include "googletest-fixture/environ.hpp"
 
 
 /**
