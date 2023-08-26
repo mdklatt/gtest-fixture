@@ -12,7 +12,6 @@
 
 using namespace testing::fixture;
 using testing::Test;
-using std::getenv;
 using std::make_unique;
 using std::string;
 
@@ -20,49 +19,45 @@ using std::string;
 /**
  * Test suite for the EnvFixture class.
  */
-class EnvFixtureTest: public Test {
-protected:
-    EnvironFixture environ;
-};
+class EnvironFixtureTest: public Test, protected EnvironFixture {};
 
 
 /**
- * Test the EnvFixture::getenv() method.
+ * Test the EnvironFixture::getenv() method.
  */
-TEST_F(EnvFixtureTest, getenv) {
-    // FIXME: This might fail in non-login environments, e.g. GitHub Actions
-    EXPECT_EQ(getenv("PWD"), environ.getenv("PWD"));
-    EXPECT_EQ("none", environ.getenv("NONE", "none"));
+TEST_F(EnvironFixtureTest, getenv) {
+    EXPECT_EQ(std::getenv("PWD"), getenv("PWD"));
+    EXPECT_EQ("none", getenv("NONE", "none"));
 }
 
 
 /**
- * Test the EnvFixture::setenv() method.
+ * Test the EnvironFixture::setenv() method.
  */
-TEST_F(EnvFixtureTest, setenv) {
+TEST_F(EnvironFixtureTest, setenv) {
     static const string value{"TEST"};
     for (const auto& name: {"HOME", "NEW"}) {
         // Test an existing and new variable.
-        environ.setenv(name, value);
+        setenv(name, value);
         EXPECT_EQ(value, getenv(name));
     }
 }
 
 
 /**
- * Test the EnvFixture::delenv() method.
+ * Test the EnvironFixture::delenv() method.
  */
-TEST_F(EnvFixtureTest, delenv) {
-    environ.setenv("TESTENV", "TRUE");
-    environ.delenv("TESTENV");
-    EXPECT_FALSE(getenv("TESTENV"));
+TEST_F(EnvironFixtureTest, delenv) {
+    setenv("TESTENV", "TRUE");
+    delenv("TESTENV");
+    EXPECT_FALSE(std::getenv("TESTENV"));
 }
 
 
 /**
- * Test the EnvFixture destructor.
+ * Test EnvironFixture teardown.
  */
-TEST_F(EnvFixtureTest, dtor) {
+TEST_F(EnvironFixtureTest, teardown) {
     // Ensure that all changes are rolled back when the fixture is destroyed.
     const string home{getenv("HOME")};  // TODO: defined for GitHub Actions?
     const string pwd{getenv("PWD")};
@@ -71,7 +66,7 @@ TEST_F(EnvFixtureTest, dtor) {
     tmpenv->setenv("PWD", "NONE");  // changed
     tmpenv->delenv("HOME");
     tmpenv.reset();  // invoke ~EnvFixture()
-    EXPECT_FALSE(getenv("TESTENV"));
-    EXPECT_EQ(pwd, getenv("PWD"));
-    EXPECT_EQ(home, getenv("HOME"));
+    EXPECT_FALSE(std::getenv("TESTENV"));
+    EXPECT_EQ(pwd, std::getenv("PWD"));
+    EXPECT_EQ(home, std::getenv("HOME"));
 }
