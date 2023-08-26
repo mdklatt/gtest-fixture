@@ -11,5 +11,7 @@
  * @return system exit status
  */
 int main() {
-    return testing::fixture::add(1, 2) == 3 ? 0 : 1;
+    testing::fixture::EnvironFixture fixture;
+    fixture.setenv("GTEST_FIXTURE", "1");
+    return fixture.getenv("GTEST_FIXTURE", "0") == "1" ? 0 : 1;
 }
