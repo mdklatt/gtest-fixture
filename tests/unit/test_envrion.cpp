@@ -4,7 +4,7 @@
  * Link all test files with the `gtest_main` library to create a command-line
  * test runner.
  */
-#include "googletest-fixture/environ.hpp"
+#include "gtest-fixture/environ.hpp"
 #include <gtest/gtest.h>
 #include <cstdlib>
 #include <memory>

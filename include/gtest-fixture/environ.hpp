@@ -3,8 +3,8 @@
  *
  * @file
  */
-#ifndef GOOGLETEST_FIXTURE_ENVIRON_HPP
-#define GOOGLETEST_FIXTURE_ENVIRON_HPP
+#ifndef GTEST_FIXTURE_ENVIRON_HPP
+#define GTEST_FIXTURE_ENVIRON_HPP
 
 #include <map>
 #include <memory>
@@ -17,6 +17,9 @@ namespace testing::fixture {
      */
     class EnvironFixture {
     public:
+        EnvironFixture() = default;
+        EnvironFixture(const EnvironFixture&) = delete;
+
         /**
          * Destructor.
          *
@@ -77,4 +80,4 @@ namespace testing::fixture {
 
 }  // namespace testing::fixture
 
-#endif  // GOOGLETEST_FIXTURE_ENVIRON_HPP
+#endif  // GTEST_FIXTURE_ENVIRON_HPP

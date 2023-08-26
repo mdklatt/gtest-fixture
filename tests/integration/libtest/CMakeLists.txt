@@ -16,12 +16,12 @@ else()
     message(STATUS "Testing installed library at ${path}")
     list(APPEND CMAKE_MODULE_PATH "${CMAKE_PREFIX_PATH}/cmake")
     message(STATUS "CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
-    find_package(googletest-fixture REQUIRED)
+    find_package(gtest-fixture REQUIRED)
 endif()
     
 
 add_executable(libtest libtest.cpp)
 target_link_libraries(libtest
 PRIVATE
-    googletest-fixture::googletest-fixture
+    gtest-fixture::gtest-fixture
 )

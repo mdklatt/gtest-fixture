@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(googletest-fixture
-    VERSION 0.1.0.1  # add build number to designate a dev version
+project(gtest-fixture
+    VERSION 0.1.0.2  # add build number to designate a dev version
     LANGUAGES CXX
 )
 

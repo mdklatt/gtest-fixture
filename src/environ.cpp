@@ -1,7 +1,4 @@
-/**
- * Implementation of the sample library module.
- */
-#include "googletest-fixture/environ.hpp"
+#include "gtest-fixture/environ.hpp"
 #include <cstdio>
 #include <cstdlib>
 #include <stdexcept>

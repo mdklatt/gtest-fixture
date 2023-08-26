@@ -1,9 +1,9 @@
 # Define targets.
 
 add_library(${name}
-        environ.cpp
+    environ.cpp
 )
-add_library(googletest-fixture::googletest-fixture ALIAS googletest-fixture)
+add_library(gtest-fixture::gtest-fixture ALIAS gtest-fixture)
 
 target_include_directories(${name}
 PUBLIC
@@ -21,14 +21,14 @@ PRIVATE
 include(CMakePackageConfigHelpers)
 
 configure_package_config_file(
-    ${PROJECT_SOURCE_DIR}/cmake/googletest-fixture-config.cmake.in
-    ${CMAKE_CURRENT_BINARY_DIR}/googletest-fixture-config.cmake
+    ${PROJECT_SOURCE_DIR}/cmake/gtest-fixture-config.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/gtest-fixture-config.cmake
 INSTALL_DESTINATION
-    ${CMAKE_INSTALL_LIBDIR}/cmake/googletest-fixture
+    ${CMAKE_INSTALL_LIBDIR}/cmake/gtest-fixture
 )
 
 write_basic_package_version_file(
-    ${CMAKE_CURRENT_BINARY_DIR}/googletest-fixture-config-version.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/gtest-fixture-config-version.cmake
     VERSION ${PROJECT_VERSION}
     COMPATIBILITY AnyNewerVersion
 )
@@ -39,7 +39,7 @@ write_basic_package_version_file(
 include(GNUInstallDirs)
 
 install(TARGETS ${name}
-    EXPORT googletest-fixture-targets
+    EXPORT gtest-fixture-targets
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
@@ -47,16 +47,16 @@ install(TARGETS ${name}
 
 install(
 FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/googletest-fixture-config.cmake
-    ${CMAKE_CURRENT_BINARY_DIR}/googletest-fixture-config-version.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/gtest-fixture-config.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/gtest-fixture-config-version.cmake
 DESTINATION
-    ${CMAKE_INSTALL_LIBDIR}/cmake/googletest-fixture
+    ${CMAKE_INSTALL_LIBDIR}/cmake/gtest-fixture
 )
 
-install(EXPORT googletest-fixture-targets
-    FILE googletest-fixture-targets.cmake
-    NAMESPACE googletest-fixture::
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/googletest-fixture
+install(EXPORT gtest-fixture-targets
+    FILE gtest-fixture-targets.cmake
+    NAMESPACE gtest-fixture::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/gtest-fixture
 )
 
 
@@ -64,8 +64,8 @@ install(EXPORT googletest-fixture-targets
 # via `add_subdirectory()`, then `find_package()` will work without
 # requiring this project to be installed.
 
-export(EXPORT googletest-fixture-targets
-    FILE ${CMAKE_CURRENT_BINARY_DIR}/googletest-fixture-targets.cmake
-    NAMESPACE googletest-fixture::
+export(EXPORT gtest-fixture-targets
+    FILE ${CMAKE_CURRENT_BINARY_DIR}/gtest-fixture-targets.cmake
+    NAMESPACE gtest-fixture::
 )
-export(PACKAGE googletest-fixture)
+export(PACKAGE gtest-fixture)

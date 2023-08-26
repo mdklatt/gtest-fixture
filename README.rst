@@ -1,6 +1,6 @@
-##################
-googletest-fixture
-##################
+#############
+gtest-fixture
+#############
 
 Test fixtures for use with `GoogleTest`_.
 
