@@ -2,15 +2,38 @@
 gtest-fixture
 #############
 
-Test fixtures for use with `GoogleTest`_.
+|c++17|
+|cmake|
+|license|
+|tests|
+
+
+Test fixture mixins to add capabilities to `GoogleTest`_ test suites.
 
 
 =====
 Usage
 =====
 
-Use these fixtures with ``testing::Test`` classes to manage resources during
-testing.
+In most cases, the easiest approach is to inherit directly from the desired
+fixture:
+
+.. code-block::
+
+    class UnitTest: public testing::Test, protected testing::fixture::EnvironFixture {
+    protected:
+        UnitTest() {
+            SetEnv("TEST_ENV", "FOO");
+        }
+    }
+
+    TEST_F(UnitTest, env) {
+        EXPECT_EQ("FOO", GetEnv("TEST_ENV");
+    }
+
+
+If more control over the fixture lifetime is needed, use composition instead
+of inheritance.
 
 
 Fixtures
@@ -56,4 +79,17 @@ Build documentation:
     $ make docs
 
 
+.. |c++17| image:: https://img.shields.io/static/v1?label=c%2B%2B&message=17&color=informational
+   :alt: C++17
+.. |cmake| image:: https://img.shields.io/static/v1?label=cmake&message=3.16&color=informational
+   :alt: CMake 3.16
+.. |license| image:: https://img.shields.io/github/license/mdklatt/gtest-fixture
+   :alt: MIT License
+   :target: `MIT License`_
+.. |tests| image:: https://github.com/mdklatt/gtest-fixture/actions/workflows/test.yml/badge.svg
+   :alt: CI Test
+   :target: `GitHub Actions`_
+
+.. _GitHub Actions: https://github.com/mdklatt/gtest-fixture/actions/workflows/test.yml
 .. _GoogleTest: http://google.github.io/googletest/
+.. _MIT License: http://choosealicense.com/licenses/mit
