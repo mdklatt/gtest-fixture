@@ -1,7 +1,6 @@
-get_filename_component(GTEST-FIXTURE_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+include(CMakeFindDependencyMacro)
+find_dependency(GTest)
 
 if(NOT TARGET @PROJECT_NAME@::@PROJECT_NAME@)
-    include("${GTEST-FIXTURE_CMAKE_DIR}/@PROJECT_NAME@-targets.cmake")
+    include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@-targets.cmake")
 endif()
-
-set(GTEST-FIXTURE_LIBRARIES @PROJECT_NAME@::@PROJECT_NAME@)

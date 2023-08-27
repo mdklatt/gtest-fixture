@@ -15,7 +15,10 @@ PUBLIC
 PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
-
+target_link_libraries(${name}
+PRIVATE
+    GTest::gtest
+)
 
 # Generate package config files.
 
@@ -39,7 +42,7 @@ write_basic_package_version_file(
 
 include(GNUInstallDirs)
 
-install(TARGETS ${name}
+install(TARGETS ${name} gtest
     EXPORT gtest-fixture-targets
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}

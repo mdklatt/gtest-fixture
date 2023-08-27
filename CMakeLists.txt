@@ -6,6 +6,14 @@ project(gtest-fixture
     LANGUAGES CXX
 )
 
+include(FetchContent)
+FetchContent_Declare(googletest
+    GIT_REPOSITORY https://github.com/google/googletest.git
+    GIT_TAG v1.13.0
+)
+FetchContent_MakeAvailable(googletest)
+
+
 list(INSERT CMAKE_MODULE_PATH 0 ${PROJECT_SOURCE_DIR}/cmake)
 include(DebugASanBuildType)
 

@@ -1,15 +1,3 @@
-# Get dependencies.
-
-include(FetchContent)
-include(GoogleTest)
-
-FetchContent_Declare(googletest
-    GIT_REPOSITORY https://github.com/google/googletest.git
-    GIT_TAG v1.13.0
-)
-FetchContent_MakeAvailable(googletest)
-
-
 # Define targets.
 
 add_executable(test_${name}
@@ -19,11 +7,11 @@ add_executable(test_${name}
 target_link_libraries(test_${name}
 PRIVATE
     ${name}
-    gtest
-    gtest_main
+    GTest::gtest_main
 )
 
 
 # Add tests to CTest suite.
 
+include(GoogleTest)
 gtest_discover_tests(test_${name} WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
