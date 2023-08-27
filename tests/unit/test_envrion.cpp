@@ -17,7 +17,7 @@ using std::string;
 
 
 /**
- * Test suite for the EnvFixture class.
+ * Test suite for the EnvironFixture class.
  */
 class EnvironFixtureTest: public Test, protected EnvironFixture {};
 
