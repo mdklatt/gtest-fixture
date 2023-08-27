@@ -25,7 +25,7 @@ EnvironFixture::~EnvironFixture() {
         }
         else {
             // Variable did not exist in original environment, so remove it.
-            it->second.reset(nullptr);
+            item.second = nullptr;
         }
     }
 }

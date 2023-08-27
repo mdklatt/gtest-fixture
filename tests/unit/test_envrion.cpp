@@ -12,6 +12,7 @@
 
 using namespace testing::fixture;
 using testing::Test;
+using std::getenv;
 using std::make_unique;
 using std::string;
 
@@ -26,7 +27,7 @@ class EnvironFixtureTest: public Test, protected EnvironFixture {};
  * Test the EnvironFixture::GetEnv() method.
  */
 TEST_F(EnvironFixtureTest, GetEnv) {
-    EXPECT_EQ(std::getenv("PWD"), GetEnv("PWD"));
+    EXPECT_EQ(getenv("PWD"), GetEnv("PWD"));
     EXPECT_EQ("none", GetEnv("NONE", "none"));
 }
 
@@ -50,7 +51,7 @@ TEST_F(EnvironFixtureTest, SetEnv) {
 TEST_F(EnvironFixtureTest, DeleteEnv) {
     SetEnv("TESTENV", "TRUE");
     DeleteEnv("TESTENV");
-    EXPECT_FALSE(std::getenv("TESTENV"));
+    EXPECT_FALSE(getenv("TESTENV"));
 }
 
 
@@ -66,7 +67,7 @@ TEST_F(EnvironFixtureTest, teardown) {
     tmpenv->SetEnv("PWD", "NONE");  // changed
     tmpenv->DeleteEnv("HOME");
     tmpenv.reset();  // invoke ~EnvFixture()
-    EXPECT_FALSE(std::getenv("TESTENV"));
-    EXPECT_EQ(pwd, std::getenv("PWD"));
-    EXPECT_EQ(home, std::getenv("HOME"));
+    EXPECT_FALSE(getenv("TESTENV"));
+    EXPECT_EQ(pwd, getenv("PWD"));
+    EXPECT_EQ(home, getenv("HOME"));
 }
