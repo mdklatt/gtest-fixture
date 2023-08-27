@@ -1,9 +1,13 @@
 cmake_minimum_required(VERSION 3.16)
 
 project(gtest-fixture
+    # Semantic Versioning: <https://semver.org>
     VERSION 0.1.0.3  # add build number to designate a dev version
     LANGUAGES CXX
 )
+
+list(INSERT CMAKE_MODULE_PATH 0 ${PROJECT_SOURCE_DIR}/cmake)
+include(DebugASanBuildType)
 
 option(BUILD_DOCS "Build documentation" OFF)
 

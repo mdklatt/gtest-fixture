@@ -22,7 +22,7 @@ PRIVATE
 include(CMakePackageConfigHelpers)
 
 configure_package_config_file(
-    ${PROJECT_SOURCE_DIR}/cmake/gtest-fixture-config.cmake.in
+    cmake/gtest-fixture-config.cmake.in
     ${CMAKE_CURRENT_BINARY_DIR}/gtest-fixture-config.cmake
 INSTALL_DESTINATION
     ${CMAKE_INSTALL_LIBDIR}/cmake/gtest-fixture
