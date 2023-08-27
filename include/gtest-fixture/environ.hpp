@@ -17,13 +17,13 @@ namespace testing::fixture {
      */
     class EnvironFixture {
     public:
+        /**
+         * Default constructor.
+         */
         EnvironFixture() = default;
-        EnvironFixture(const EnvironFixture&) = delete;
 
         /**
-         * Destructor.
-         *
-         * This will restore the environment to its previous state.
+         * Roll back changes to the environment.
          */
         ~EnvironFixture();
 
@@ -36,7 +36,7 @@ namespace testing::fixture {
          * @param fallback
          * @return
          */
-        std::string getenv(const std::string& name, const std::string& fallback = "") const;
+        static std::string GetEnv(const std::string& name, const std::string& fallback = "");
 
         /**
          * Set the value of an environment variable.
@@ -50,7 +50,7 @@ namespace testing::fixture {
          * @param name variable name
          * @param value variable value
          */
-        void setenv(const std::string& name, const std::string& value = "");
+        void SetEnv(const std::string& name, const std::string& value = "");
 
         /**
          * Delete a test variable from the environment.
@@ -62,7 +62,9 @@ namespace testing::fixture {
          *
          * @param name variable name
          */
-        void delenv(const std::string& name);
+        void DeleteEnv(const std::string& name);
+
+        EnvironFixture(const EnvironFixture&) = delete;
 
     private:
         static std::map<std::string, std::unique_ptr<char>> global;
@@ -75,7 +77,7 @@ namespace testing::fixture {
          * @param value variable value
          * @return string pointer (caller assumes ownership)
          */
-        static char* newenv(const std::string& name, const std::string& value = "");
+        static char* EnvStr(const std::string& name, const std::string& value = "");
     };
 
 }  // namespace testing::fixture

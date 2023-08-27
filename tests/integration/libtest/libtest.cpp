@@ -12,6 +12,6 @@
  */
 int main() {
     testing::fixture::EnvironFixture fixture;
-    fixture.setenv("GTEST_FIXTURE", "1");
-    return fixture.getenv("GTEST_FIXTURE", "0") == "1" ? 0 : 1;
+    fixture.SetEnv("GTEST_FIXTURE", "1");
+    return fixture.GetEnv("GTEST_FIXTURE", "0") == "1" ? 0 : 1;
 }

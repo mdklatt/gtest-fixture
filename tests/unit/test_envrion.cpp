@@ -23,33 +23,33 @@ class EnvironFixtureTest: public Test, protected EnvironFixture {};
 
 
 /**
- * Test the EnvironFixture::getenv() method.
+ * Test the EnvironFixture::GetEnv() method.
  */
-TEST_F(EnvironFixtureTest, getenv) {
-    EXPECT_EQ(std::getenv("PWD"), getenv("PWD"));
-    EXPECT_EQ("none", getenv("NONE", "none"));
+TEST_F(EnvironFixtureTest, GetEnv) {
+    EXPECT_EQ(std::getenv("PWD"), GetEnv("PWD"));
+    EXPECT_EQ("none", GetEnv("NONE", "none"));
 }
 
 
 /**
- * Test the EnvironFixture::setenv() method.
+ * Test the EnvironFixture::SetEnv() method.
  */
-TEST_F(EnvironFixtureTest, setenv) {
+TEST_F(EnvironFixtureTest, SetEnv) {
     static const string value{"TEST"};
     for (const auto& name: {"HOME", "NEW"}) {
         // Test an existing and new variable.
-        setenv(name, value);
-        EXPECT_EQ(value, getenv(name));
+        SetEnv(name, value);
+        EXPECT_EQ(value, GetEnv(name));
     }
 }
 
 
 /**
- * Test the EnvironFixture::delenv() method.
+ * Test the EnvironFixture::DeleteEnv() method.
  */
-TEST_F(EnvironFixtureTest, delenv) {
-    setenv("TESTENV", "TRUE");
-    delenv("TESTENV");
+TEST_F(EnvironFixtureTest, DeleteEnv) {
+    SetEnv("TESTENV", "TRUE");
+    DeleteEnv("TESTENV");
     EXPECT_FALSE(std::getenv("TESTENV"));
 }
 
@@ -59,12 +59,12 @@ TEST_F(EnvironFixtureTest, delenv) {
  */
 TEST_F(EnvironFixtureTest, teardown) {
     // Ensure that all changes are rolled back when the fixture is destroyed.
-    const string home{getenv("HOME")};  // TODO: defined for GitHub Actions?
-    const string pwd{getenv("PWD")};
+    const string home{GetEnv("HOME")};  // TODO: defined for GitHub Actions?
+    const string pwd{GetEnv("PWD")};
     auto tmpenv{make_unique<EnvironFixture>()};
-    tmpenv->setenv("TESTENV");  // added
-    tmpenv->setenv("PWD", "NONE");  // changed
-    tmpenv->delenv("HOME");
+    tmpenv->SetEnv("TESTENV");  // added
+    tmpenv->SetEnv("PWD", "NONE");  // changed
+    tmpenv->DeleteEnv("HOME");
     tmpenv.reset();  // invoke ~EnvFixture()
     EXPECT_FALSE(std::getenv("TESTENV"));
     EXPECT_EQ(pwd, std::getenv("PWD"));
