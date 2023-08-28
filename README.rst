@@ -22,12 +22,12 @@ fixture:
 
     class UnitTest: public testing::Test, protected testing::fixture::EnvironFixture {
     protected:
-        UnitTest() {
+        TestSuite() {
             SetEnv("TEST_ENV", "FOO");
         }
     }
 
-    TEST_F(UnitTest, env) {
+    TEST_F(SestSuite, env) {
         EXPECT_EQ("FOO", GetEnv("TEST_ENV");
     }
 
@@ -45,6 +45,13 @@ Modify environment variables for testing. Changes will be rolled back when the
 fixture is destroyed. Note that changes to the environment are *not*
 thread-safe.
 
+
+``TmpDirFixture``
+
+Provide tmp directories for testing. A numbered directory will be created for
+each test run, and every test within that run will have its own dedicated
+subdirectory. Run directories are *not* removed on exit and will be
+available for inspection until the run directory is recycled.
 
 
 ===========
