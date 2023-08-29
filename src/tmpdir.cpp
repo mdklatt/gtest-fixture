@@ -1,14 +1,31 @@
 #include "gtest-fixture/tmpdir.hpp"
 #include <gtest/gtest.h>
+#include <algorithm>
+#include <deque>
+#include <limits>
+#include <map>
+#include <regex>
 #include <string>
 
 using testing::fixture::TmpDirFixture;
 using testing::UnitTest;
+using std::deque;
 using std::filesystem::create_directories;
+using std::filesystem::directory_iterator;
 using std::filesystem::is_directory;
 using std::filesystem::path;
 using std::filesystem::remove_all;
 using std::filesystem::temp_directory_path;
+using std::map;
+using std::min;
+using std::max;
+using std::numeric_limits;
+using std::regex;
+using std::regex_search;
+using std::runtime_error;
+using std::smatch;
+using std::sort;
+using std::stoul;
 using std::string;
 using std::to_string;
 
@@ -42,23 +59,38 @@ std::filesystem::path TmpDirFixture::TmpTestDir(const string& subdir, bool creat
 
 
 void TmpDirFixture::MakeRootDir() {
+    // TODO: Too long, needs refactoring.
+    static const regex run_regex{R"(^run-(\d+)$)"};  // capture run number
     const auto root{temp_directory_path() / "gtest"};
-    std::filesystem::path path;
-    size_t count{0};
-    do {
-        // Find an available directory. If the max count is exceeded, remove
-        // the (presumably) oldest directory and start over.
-        // FIXME: This will always reset to 1 once wraparound is reached.
-        // TODO: Need to cycle to 2, 3, etc (compare directory times?)
-        path = root / ("run-" + to_string(++count));
-        if (count > max_count) {
-            path = root / "run-1";
-            remove_all(path);
-            break;
-        }
-    } while (is_directory(path));
-    root_dir = path;
-    if (not create_directories(root_dir)) {
-        throw std::runtime_error{"could not create tmpdir " + path.string()};
+    if (not is_directory(root) and not create_directories(root)) {
+        // Test if directory exists first because create_directories() returns
+        // false if no directory was created.
+        throw runtime_error{"could not create directory: " + root.string()};
     }
+    smatch match;
+    map<size_t, std::filesystem::path> run_dirs;
+    deque<size_t> run_keys;
+    for (const auto& item: directory_iterator{root}) {
+        // Find all run directories.
+        const auto name{item.path().filename().string()};
+        if (regex_search(name, match, run_regex)) {
+            const auto key{stoul(match.str(1))};
+            run_dirs.emplace(key, item.path());
+            run_keys.emplace_back(key);
+        }
+    }
+    sort(run_keys.begin(), run_keys.end());
+    while (run_keys.size() > max_count - 1) {
+        // The system should remove tmp directories on a regular basis, but
+        // clean up old directories to be nice.
+        remove_all(run_dirs.at(run_keys.front()));
+        run_keys.pop_front();
+    }
+    const size_t next_run{run_keys.empty() ? 1 : ++run_keys.back()};
+    const auto path{root / ("run-" + to_string(next_run))};
+    if (not create_directories(path)) {
+        // FIXME: Race condition if something else creates 'path'.
+        throw runtime_error{"could not created directory: " + path.string()};
+    }
+    root_dir = path;
 }
