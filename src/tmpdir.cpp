@@ -30,21 +30,21 @@ using std::string;
 using std::to_string;
 
 
-std::filesystem::path TmpDirFixture::root_dir;  // lazy initialization
+std::filesystem::path TmpDirFixture::run_dir;  // lazy initialization
 
 
 TmpDirFixture::TmpDirFixture() {
     const auto test{UnitTest::GetInstance()->current_test_info()};
     test_dir = std::filesystem::path{test->test_suite_name()} / test->name();
-    TmpRootDir(test_dir, true);
+    TmpRunDir(test_dir, true);
 }
 
 
-std::filesystem::path TmpDirFixture::TmpRootDir(const string& subdir, bool create) {
-    if (root_dir.empty()) {
-        MakeRootDir();
+std::filesystem::path TmpDirFixture::TmpRunDir(const std::string &subdir, bool create) {
+    if (run_dir.empty()) {
+        MakeRunDir();
     }
-    const auto path{subdir.empty() ?  root_dir : root_dir / subdir};  // no trailing slash
+    const auto path{subdir.empty() ? run_dir : run_dir / subdir};  // no trailing slash
     if (create and not create_directories(path)) {
         throw std::runtime_error{"could not create directory " + path.string()};
     }
@@ -54,11 +54,11 @@ std::filesystem::path TmpDirFixture::TmpRootDir(const string& subdir, bool creat
 
 std::filesystem::path TmpDirFixture::TmpTestDir(const string& subdir, bool create) const {
     const auto path{subdir.empty() ?  test_dir : test_dir / subdir};  // no trailing slash
-    return TmpRootDir(path, create);
+    return TmpRunDir(path, create);
 }
 
 
-void TmpDirFixture::MakeRootDir() {
+void TmpDirFixture::MakeRunDir() {
     // TODO: Too long, needs refactoring.
     static const regex run_regex{R"(^run-(\d+)$)"};  // capture run number
     const auto root{temp_directory_path() / "gtest"};
@@ -89,8 +89,8 @@ void TmpDirFixture::MakeRootDir() {
     const size_t next_run{run_keys.empty() ? 1 : ++run_keys.back()};
     const auto path{root / ("run-" + to_string(next_run))};
     if (not create_directories(path)) {
-        // FIXME: Race condition if something else creates 'path'.
+        // FIXME: Race condition if another gtest executable else creates 'path'.
         throw runtime_error{"could not created directory: " + path.string()};
     }
-    root_dir = path;
+    run_dir = path;
 }

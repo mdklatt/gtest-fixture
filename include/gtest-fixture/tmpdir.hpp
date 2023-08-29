@@ -39,7 +39,7 @@ public:
      * @param create create the subdirectory if it does not exist
      * @return absolute directory path
      */
-    static std::filesystem::path TmpRootDir(const std::string& subdir = "", bool create = false);
+    static std::filesystem::path TmpRunDir(const std::string &subdir = "", bool create = false);
 
     /**
      * Default constructor.
@@ -60,13 +60,13 @@ public:
 
 private:
     static constexpr size_t max_count{10};
-    static std::filesystem::path root_dir;
+    static std::filesystem::path run_dir;
     std::filesystem::path test_dir;  // relative to root_dir
 
     /**
      * Create the root tmp directory for this run.
      */
-    static void MakeRootDir();
+    static void MakeRunDir();
 };
 
 }  // namespace

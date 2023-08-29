@@ -21,16 +21,16 @@ class TmpDirFixtureTest: public Test, protected TmpDirFixture {};
 
 
 /**
- *
+ * Test the TmpDirFixture::TmpRunDir() method.
  */
-TEST_F(TmpDirFixtureTest, GetTmpRootDir) {
-    const auto path{TmpRootDir()};
+TEST_F(TmpDirFixtureTest, TmpRunDir) {
+    const auto path{TmpRunDir()};
     EXPECT_NE(string::npos, path.string().find("gtest/run"));
 }
 
 
 /**
- *
+ * Test the TmpDirFixture::TmpTestDir() method.
  */
 TEST_F(TmpDirFixtureTest, TmpTestDir) {
     const auto path{TmpTestDir()};
@@ -40,7 +40,7 @@ TEST_F(TmpDirFixtureTest, TmpTestDir) {
 
 
 /**
- *
+ * Test the TmpDirFixture::TmpTestDir() method with a subdirectory.
  */
 TEST_F(TmpDirFixtureTest, TmpTestDir_subdir) {
     const auto path{TmpTestDir("xyz")};
@@ -50,7 +50,7 @@ TEST_F(TmpDirFixtureTest, TmpTestDir_subdir) {
 
 
 /**
- *
+ * Test the TmpDirFixture::TmpTestDir() method for a new subdirectory.
  */
 TEST_F(TmpDirFixtureTest, TmpTestDir_create) {
     const auto path{TmpTestDir("xyz", true)};
