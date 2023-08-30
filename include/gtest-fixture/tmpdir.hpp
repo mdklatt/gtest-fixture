@@ -7,6 +7,7 @@
 #define GTEST_FIXTURE_TMPDIR_HPP
 
 #include <filesystem>
+#include <map>
 
 
 namespace testing::fixture {
@@ -60,13 +61,28 @@ public:
 
 private:
     static constexpr size_t max_count{10};
+    static const std::filesystem::path root_dir;
     static std::filesystem::path run_dir;
-    std::filesystem::path test_dir;  // relative to root_dir
+    std::filesystem::path test_dir;  // relative to run_dir
 
     /**
      * Create the root tmp directory for this run.
      */
     static void MakeRunDir();
+
+    /**
+     * Get a listing of the existing run directories.
+     *
+     * @return directory paths keyed and sorted by sequence number
+     */
+    static std::map<size_t, std::filesystem::path> GetRunDirs();
+
+    /**
+     * Clean old run directories.
+     *
+     * @param root directory to search
+     */
+    static void CleanRunDirs();
 };
 
 }  // namespace
