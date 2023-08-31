@@ -11,6 +11,7 @@
 using namespace testing::fixture;
 using testing::Test;
 using std::filesystem::is_directory;
+using std::filesystem::relative;
 using std::string;
 
 
@@ -30,22 +31,46 @@ TEST_F(TmpDirFixtureTest, TmpRunDir) {
 
 
 /**
- * Test the TmpDirFixture::TmpTestDir() method.
+ * Test the TmpDirFixture::TmpRunDir() method for a subdirectory.
  */
-TEST_F(TmpDirFixtureTest, TmpTestDir) {
-    const auto path{TmpTestDir()};
-    EXPECT_NE(string::npos, path.string().find("TmpTestDir"));
+TEST_F(TmpDirFixtureTest, TmpRunDir_subdir) {
+    const string subdir{"xyz"};
+    const auto path{TmpRunDir(subdir)};
+    EXPECT_EQ(subdir, path.filename().string());
+    EXPECT_FALSE(is_directory(path));
+}
+
+
+/**
+ * Test the TmpDirFixture::TmpRunDir() method for a new subdirectory.
+ */
+TEST_F(TmpDirFixtureTest, TmpRunDir_create) {
+    const string subdir{"xyz"};
+    const auto path{TmpRunDir(subdir, true)};
+    EXPECT_EQ(subdir, path.filename().string());
     EXPECT_TRUE(is_directory(path));
 }
 
 
 /**
- * Test the TmpDirFixture::TmpTestDir() method with a subdirectory.
+ * Test the TmpDirFixture::TmpTestDir() method.
+ */
+TEST_F(TmpDirFixtureTest, TmpTestDir) {
+    const auto abs_path{TmpTestDir()};
+    const auto rel_path{relative(abs_path, TmpRunDir())};
+    EXPECT_EQ("TmpDirFixtureTest/TmpTestDir", rel_path.string());
+    EXPECT_TRUE(is_directory(abs_path));
+}
+
+
+/**
+ * Test the TmpDirFixture::TmpTestDir() method for a subdirectory.
  */
 TEST_F(TmpDirFixtureTest, TmpTestDir_subdir) {
-    const auto path{TmpTestDir("xyz")};
-    EXPECT_NE(string::npos, path.string().find("TmpTestDir_subdir/xyz"));
-    EXPECT_FALSE(is_directory(path));
+    const auto abs_path{TmpTestDir("xyz")};
+    const auto rel_path{relative(abs_path, TmpRunDir())};
+    EXPECT_EQ("TmpDirFixtureTest/TmpTestDir_subdir/xyz", rel_path.string());
+    EXPECT_FALSE(is_directory(abs_path));
 }
 
 
@@ -53,7 +78,8 @@ TEST_F(TmpDirFixtureTest, TmpTestDir_subdir) {
  * Test the TmpDirFixture::TmpTestDir() method for a new subdirectory.
  */
 TEST_F(TmpDirFixtureTest, TmpTestDir_create) {
-    const auto path{TmpTestDir("xyz", true)};
-    EXPECT_NE(string::npos, path.string().find("TmpTestDir_create/xyz"));
-    EXPECT_TRUE(is_directory(path));
+    const auto abs_path{TmpTestDir("xyz", true)};
+    const auto rel_path{relative(abs_path, TmpRunDir())};
+    EXPECT_EQ("TmpDirFixtureTest/TmpTestDir_create/xyz", rel_path.string());
+    EXPECT_TRUE(is_directory(abs_path));
 }
