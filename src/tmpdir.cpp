@@ -27,13 +27,34 @@ const std::filesystem::path TmpDirFixture::root_dir{temp_directory_path() / "gte
 
 std::filesystem::path TmpDirFixture::run_dir;  // lazy initialization
 
+size_t TmpDirFixture::test_count{0};
+
 
 TmpDirFixture::TmpDirFixture() {
     const auto test{UnitTest::GetInstance()->current_test_info()};
     test_dir = std::filesystem::path{test->test_suite_name()} / test->name();
     TmpRunDir(test_dir, true);
+    ++test_count;
 }
 
+
+TmpDirFixture::~TmpDirFixture() {
+    // Leave the most recent run directories intact to allow additional action
+    // to be taken with test output, but remove older run directories.
+    if (--test_count > 0) {
+        // Run isn't complete yet.
+        return;
+    }
+    auto run_dirs{GetRunDirs()};
+    while (run_dirs.size() > max_dir_count) {
+        // Directories are sorted by run numbers, which are assumed to be in
+        // chronological order, so start removing directories at the beginning.
+        const auto oldest{run_dirs.begin()};
+        const auto path{oldest->second};
+        remove_all(path);  // don't care if this fails
+        run_dirs.erase(oldest);
+    }
+}
 
 std::filesystem::path TmpDirFixture::TmpRunDir(const std::string &subdir, bool create) {
     if (run_dir.empty()) {
@@ -72,12 +93,11 @@ void TmpDirFixture::MakeRunDir() {
         throw runtime_error{"could not create run directory in " + root.string()};
     }
     run_dir = path;
-    CleanRunDirs();
 }
 
 
 map<size_t, std::filesystem::path> TmpDirFixture::GetRunDirs() {
-    map < size_t, std::filesystem::path > run_dirs;
+    map<size_t, std::filesystem::path> run_dirs;
     if (not is_directory(root_dir)) {
         return run_dirs;
     }
@@ -92,21 +112,4 @@ map<size_t, std::filesystem::path> TmpDirFixture::GetRunDirs() {
         }
     }
     return run_dirs;  // sorted by default
-}
-
-
-void TmpDirFixture::CleanRunDirs() {
-    // The system should clean tmp directories on a regular basis, but clean up
-    // old run directories here just to be nice.
-    auto run_dirs{GetRunDirs()};
-    while (run_dirs.size() > max_count) {
-        // Run directories are sorted by run number, which is assumed to be
-        // the same as chronological order, so start at the beginning.
-        const auto oldest{run_dirs.begin()};
-        const auto path{oldest->second};
-        if (remove_all(path) == 0) {
-            throw runtime_error{"could not remove run directory " + path.string()};
-        }
-        run_dirs.erase(oldest);
-    }
 }

@@ -22,19 +22,15 @@ public:
      *
      * Each execution of a GoogleTest executable is considered a run. A clean
      * root directory is created to hold all test directories for each run.
-     * This directory is *not* automatically deleted after the run, so it is
-     * available for inspection until it is recycled (see below).
-     *
-     * Each run directory is numbered to guarantee uniqueness, *e.g*
-     * `gtest/run-5`. The `max_count` class attribute determines the maximum
-     * number of run directories that will be created. Once this limit is
-     * reached, the first directory (`run-1`) is recycled, and the sequence
-     * resets.
+     * The most recent directories are left intact, so test output is available
+     * until the run directory is recycled (note that the system is free to
+     * remove tmp directories at any time; this is commonly done on reboot).
      *
      * In most cases it is not necessary to call this method; instead, use
      * `TmpTestDir()` to get a clean directory for each test. This method can
-     * be used for cases where multiple tests need to share a directory, but it
-     * is the caller's responsibility to avoid directory name collisions.
+     * be used to create directories that can be shared be multiple tests in
+     * a single run, but it is the caller's responsibility to avoid name
+     * collisions.
      *
      * @param subdir optional subdirectory within the run root
      * @param create create the subdirectory if it does not exist
@@ -46,6 +42,11 @@ public:
      * Default constructor.
      */
     TmpDirFixture();
+
+    /**
+     * Destructor.
+     */
+    ~TmpDirFixture();
 
     /**
      * Get a tmp directory for the current test.
@@ -60,9 +61,10 @@ public:
     std::filesystem::path TmpTestDir(const std::string& subdir = "", bool create = false) const;
 
 private:
-    static constexpr size_t max_count{10};
+    static constexpr size_t max_dir_count{10};
     static const std::filesystem::path root_dir;
     static std::filesystem::path run_dir;
+    static size_t test_count;
     std::filesystem::path test_dir;  // relative to run_dir
 
     /**
@@ -76,13 +78,6 @@ private:
      * @return directory paths keyed and sorted by sequence number
      */
     static std::map<size_t, std::filesystem::path> GetRunDirs();
-
-    /**
-     * Clean old run directories.
-     *
-     * @param root directory to search
-     */
-    static void CleanRunDirs();
 };
 
 }  // namespace
