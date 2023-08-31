@@ -78,6 +78,17 @@ namespace testing::fixture {
          * @return string pointer (caller assumes ownership)
          */
         static char* EnvStr(const std::string& name, const std::string& value = "");
+
+        /**
+         * Save a variable to the fixture's local environment.
+         *
+         * If the variable exists in the global environment the original value
+         * will be saved so it can be restored later.
+         *
+         * @param name variable name
+         * @param value varible value
+         */
+        void SaveEnv(const std::string& name, const char* value = nullptr);
     };
 
 }  // namespace testing::fixture

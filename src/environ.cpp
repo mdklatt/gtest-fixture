@@ -21,11 +21,11 @@ EnvironFixture::~EnvironFixture() {
             // Restore variable to its previous value. The underlying pointer
             // has static duration and remains valid for the life of the
             // application.
-            ::putenv(it->second.get());
+            putenv(it->second.get());
         }
         else {
             // Variable did not exist in original environment, so remove it.
-            item.second = nullptr;
+            unsetenv(item.first.c_str());
         }
     }
 }
@@ -37,30 +37,21 @@ string EnvironFixture::GetEnv(const std::string &name, const std::string& fallba
 }
 
 
-void EnvironFixture::SetEnv(const std::string &name, const std::string &value) {
-    const auto* current{std::getenv(name.c_str())};
-    if (current and global.find(name) == global.end()) {
-        // Save the original variable so that it can be restored later. This
-        // storage has static duration that is shared by all fixtures, so it
-        // will remain valid for the lifetime of the application.
-        global[name].reset(EnvStr(name, current));
-    }
-    local[name].reset(EnvStr(name, value));  // fixture has ownership
-    ::putenv(local[name].get());
+void EnvironFixture::SetEnv(const std::string& name, const std::string& value) {
+    SaveEnv(name, value.c_str());
+    putenv(local[name].get());
 }
 
 
-void EnvironFixture::DeleteEnv(const std::string &name) {
+void EnvironFixture::DeleteEnv(const std::string& name) {
     const auto it{local.find(name)};
     if (it == local.end()) {
-        // Need to take ownership and then delete it.
-        SetEnv(name);
-        DeleteEnv(name);
+        SaveEnv(name);
     }
     else {
-        // Fixture already has ownership, nullify the environment pointer.
-        it->second.reset(nullptr);
+        it->second = nullptr;
     }
+    unsetenv(name.c_str());
 }
 
 
@@ -69,4 +60,15 @@ char* EnvironFixture::EnvStr(const std::string &name, const std::string &value) 
     auto* env{new char[strlen]};
     snprintf(env, strlen, "%s=%s", name.c_str(), value.c_str());
     return env;  // caller assumes ownership
+}
+
+
+void testing::fixture::EnvironFixture::SaveEnv(const string& name, const char* value) {
+    const auto* current{std::getenv(name.c_str())};
+    if (current and global.find(name) == global.end()) {
+        // Save the original variable so that it can be restored later.
+        global[name].reset(EnvStr(name, current));
+    }
+    auto* env{value ? EnvStr(name, value) : nullptr};
+    local[name].reset(env);  // object takes ownership
 }

@@ -40,7 +40,7 @@ public:
      * @param create create the subdirectory if it does not exist
      * @return absolute directory path
      */
-    static std::filesystem::path TmpRunDir(const std::string &subdir = "", bool create = false);
+    static std::filesystem::path TmpRunDir(const std::string& subdir = "", bool create = false);
 
     /**
      * Default constructor.
