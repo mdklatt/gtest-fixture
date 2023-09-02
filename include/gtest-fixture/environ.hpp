@@ -36,7 +36,7 @@ namespace testing::fixture {
          * @param fallback
          * @return
          */
-        static std::string GetEnv(const std::string& name, const std::string& fallback = "");
+        static std::string get(const std::string& name, const std::string& fallback = "");
 
         /**
          * Set the value of an environment variable.
@@ -50,7 +50,7 @@ namespace testing::fixture {
          * @param name variable name
          * @param value variable value
          */
-        void SetEnv(const std::string& name, const std::string& value = "");
+        void set(const std::string& name, const std::string& value = "");
 
         /**
          * Delete a test variable from the environment.
@@ -62,7 +62,7 @@ namespace testing::fixture {
          *
          * @param name variable name
          */
-        void DeleteEnv(const std::string& name);
+        void unset(const std::string& name);
 
         EnvironFixture(const EnvironFixture&) = delete;
 
@@ -77,7 +77,7 @@ namespace testing::fixture {
          * @param value variable value
          * @return string pointer (caller assumes ownership)
          */
-        static char* EnvStr(const std::string& name, const std::string& value = "");
+        static char* str(const std::string& name, const std::string& value = "");
 
         /**
          * Save a variable to the fixture's local environment.
@@ -88,7 +88,7 @@ namespace testing::fixture {
          * @param name variable name
          * @param value varible value
          */
-        void SaveEnv(const std::string& name);
+        void save(const std::string& name);
     };
 
 }  // namespace testing::fixture

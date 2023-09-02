@@ -31,28 +31,28 @@ EnvironFixture::~EnvironFixture() {
 }
 
 
-string EnvironFixture::GetEnv(const std::string &name, const std::string& fallback) {
+string EnvironFixture::get(const std::string &name, const std::string& fallback) {
     const auto* value{std::getenv(name.c_str())};
     return value ? value : fallback;
 }
 
 
-void EnvironFixture::SetEnv(const std::string& name, const std::string& value) {
-    SaveEnv(name);
-    const auto env{EnvStr(name, value)};
+void EnvironFixture::set(const std::string& name, const std::string& value) {
+    save(name);
+    const auto env{str(name, value)};
     local[name].reset(env);
     putenv(env);
 }
 
 
-void EnvironFixture::DeleteEnv(const std::string &name) {
-    SaveEnv(name);
+void EnvironFixture::unset(const std::string &name) {
+    save(name);
     local[name] = nullptr;
     unsetenv(name.c_str());
 }
 
 
-char* EnvironFixture::EnvStr(const std::string &name, const std::string& value) {
+char* EnvironFixture::str(const std::string &name, const std::string& value) {
     const size_t strlen{name.length() + value.length() + 2};
     auto* env{new char[strlen]};
     snprintf(env, strlen, "%s=%s", name.c_str(), value.c_str());
@@ -60,7 +60,7 @@ char* EnvironFixture::EnvStr(const std::string &name, const std::string& value) 
 }
 
 
-void testing::fixture::EnvironFixture::SaveEnv(const string& name) {
+void testing::fixture::EnvironFixture::save(const std::string &name) {
     if (local.find(name) != local.end()) {
         // Don't save variable that has already been modified.
         return;
@@ -70,6 +70,6 @@ void testing::fixture::EnvironFixture::SaveEnv(const string& name) {
         // Save the original variable so that it can be restored later. This
         // must be static storage because it must remain valid for the life
         // of the application.
-        global.emplace(name, EnvStr(name, current));
+        global.emplace(name, str(name, current));
     }
 }

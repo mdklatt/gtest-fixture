@@ -20,27 +20,30 @@ using std::string;
 /**
  * Test suite for the EnvironFixture class.
  */
-class EnvironFixtureTest: public Test, protected EnvironFixture {};
+class EnvironFixtureTest: public Test {
+protected:
+    EnvironFixture environ;
+};
 
 
 /**
  * Test the EnvironFixture::GetEnv() method.
  */
-TEST_F(EnvironFixtureTest, GetEnv) {
-    EXPECT_EQ(getenv("PWD"), GetEnv("PWD"));
-    EXPECT_EQ("none", GetEnv("NONE", "none"));
+TEST_F(EnvironFixtureTest, get) {
+    EXPECT_EQ(getenv("PWD"), EnvironFixture::get("PWD"));
+    EXPECT_EQ("none", EnvironFixture::get("NONE", "none"));
 }
 
 
 /**
  * Test the EnvironFixture::SetEnv() method.
  */
-TEST_F(EnvironFixtureTest, SetEnv) {
+TEST_F(EnvironFixtureTest, set) {
     static const string value{"TEST"};
     for (const auto& name: {"HOME", "NEW"}) {
         // Test an existing and new variable.
-        SetEnv(name, value);
-        EXPECT_EQ(value, GetEnv(name));
+        environ.set(name, value);
+        EXPECT_EQ(value, EnvironFixture::get(name));
     }
 }
 
@@ -48,24 +51,24 @@ TEST_F(EnvironFixtureTest, SetEnv) {
 /**
  * Test the EnvironFixture::DeleteEnv() method.
  */
-TEST_F(EnvironFixtureTest, DeleteEnv) {
-    SetEnv("TESTENV", "TRUE");
-    DeleteEnv("TESTENV");
+TEST_F(EnvironFixtureTest, unset) {
+    environ.set("TESTENV", "TRUE");
+    environ.unset("TESTENV");
     EXPECT_FALSE(getenv("TESTENV"));
 }
 
 
 /**
- * Test EnvironFixture teardown.
+ * Test EnvironFixture destructor.
  */
-TEST_F(EnvironFixtureTest, teardown) {
+TEST_F(EnvironFixtureTest, destruct) {
     // Ensure that all changes are rolled back when the fixture is destroyed.
-    const string home{GetEnv("HOME")};  // TODO: defined for GitHub Actions?
-    const string pwd{GetEnv("PWD")};
+    const auto home{EnvironFixture::get("HOME")};
+    const auto pwd{EnvironFixture::get("PWD")};
     auto tmpenv{make_unique<EnvironFixture>()};
-    tmpenv->SetEnv("TESTENV");  // added
-    tmpenv->SetEnv("PWD", "NONE");  // changed
-    tmpenv->DeleteEnv("HOME");
+    tmpenv->set("TESTENV");  // added
+    tmpenv->set("PWD", "NONE");  // changed
+    tmpenv->unset("HOME");
     tmpenv.reset();  // invoke ~EnvFixture()
     EXPECT_FALSE(getenv("TESTENV"));
     EXPECT_EQ(pwd, getenv("PWD"));
