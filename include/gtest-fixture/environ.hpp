@@ -71,7 +71,7 @@ namespace testing::fixture {
         std::map<std::string, std::unique_ptr<char>> local;
 
         /**
-         * Create an environment variable string.
+         * Create a "name=value" environment variable string.
          *
          * @param name variable name
          * @param value variable value
@@ -88,7 +88,7 @@ namespace testing::fixture {
          * @param name variable name
          * @param value varible value
          */
-        void SaveEnv(const std::string& name, const char* value = nullptr);
+        void SaveEnv(const std::string& name);
     };
 
 }  // namespace testing::fixture

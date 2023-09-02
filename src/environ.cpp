@@ -38,24 +38,21 @@ string EnvironFixture::GetEnv(const std::string &name, const std::string& fallba
 
 
 void EnvironFixture::SetEnv(const std::string& name, const std::string& value) {
-    SaveEnv(name, value.c_str());
-    putenv(local[name].get());
+    SaveEnv(name);
+    const auto env{EnvStr(name, value)};
+    local[name].reset(env);
+    putenv(env);
 }
 
 
-void EnvironFixture::DeleteEnv(const std::string& name) {
-    const auto it{local.find(name)};
-    if (it == local.end()) {
-        SaveEnv(name);
-    }
-    else {
-        it->second = nullptr;
-    }
+void EnvironFixture::DeleteEnv(const std::string &name) {
+    SaveEnv(name);
+    local[name] = nullptr;
     unsetenv(name.c_str());
 }
 
 
-char* EnvironFixture::EnvStr(const std::string &name, const std::string &value) {
+char* EnvironFixture::EnvStr(const std::string &name, const std::string& value) {
     const size_t strlen{name.length() + value.length() + 2};
     auto* env{new char[strlen]};
     snprintf(env, strlen, "%s=%s", name.c_str(), value.c_str());
@@ -63,12 +60,16 @@ char* EnvironFixture::EnvStr(const std::string &name, const std::string &value) 
 }
 
 
-void testing::fixture::EnvironFixture::SaveEnv(const string& name, const char* value) {
-    const auto* current{std::getenv(name.c_str())};
-    if (current and global.find(name) == global.end()) {
-        // Save the original variable so that it can be restored later.
-        global[name].reset(EnvStr(name, current));
+void testing::fixture::EnvironFixture::SaveEnv(const string& name) {
+    if (local.find(name) != local.end()) {
+        // Don't save variable that has already been modified.
+        return;
     }
-    auto* env{value ? EnvStr(name, value) : nullptr};
-    local[name].reset(env);  // object takes ownership
+    const auto* current{std::getenv(name.c_str())};
+    if (current) {
+        // Save the original variable so that it can be restored later. This
+        // must be static storage because it must remain valid for the life
+        // of the application.
+        global.emplace(name, EnvStr(name, current));
+    }
 }
