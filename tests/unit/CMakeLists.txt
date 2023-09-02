@@ -2,6 +2,7 @@
 
 add_executable(test_${name}
     test_envrion.cpp
+        test_shared.cpp
     test_tmpdir.cpp
 )
 target_link_libraries(test_${name}

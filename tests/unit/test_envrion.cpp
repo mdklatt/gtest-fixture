@@ -27,7 +27,7 @@ protected:
 
 
 /**
- * Test the EnvironFixture::GetEnv() method.
+ * Test the EnvironFixture::get() method.
  */
 TEST_F(EnvironFixtureTest, get) {
     EXPECT_EQ(getenv("PWD"), EnvironFixture::get("PWD"));
@@ -36,7 +36,7 @@ TEST_F(EnvironFixtureTest, get) {
 
 
 /**
- * Test the EnvironFixture::SetEnv() method.
+ * Test the EnvironFixture::set() method.
  */
 TEST_F(EnvironFixtureTest, set) {
     static const string value{"TEST"};
@@ -49,7 +49,7 @@ TEST_F(EnvironFixtureTest, set) {
 
 
 /**
- * Test the EnvironFixture::DeleteEnv() method.
+ * Test the EnvironFixture::unset() method.
  */
 TEST_F(EnvironFixtureTest, unset) {
     environ.set("TESTENV", "TRUE");
