@@ -37,7 +37,7 @@ Shared<EnvironFixture> SharedFixtureTest::environ;
 
 
 /**
- * Test the Shared<>::operator->() method.
+ * Test the Shared::operator->() method.
  */
 TEST_F(SharedFixtureTest, arrow) {
     environ->set("SHAREDFIXTURETEST", "1");
@@ -46,16 +46,7 @@ TEST_F(SharedFixtureTest, arrow) {
 
 
 /**
- * Test that Shared<> resources are valid across multiple tests.
- */
-TEST_F(SharedFixtureTest, shared) {
-    // Variable set in previous test is still valid.
-    EXPECT_EQ(string{"1"}, getenv("SHAREDFIXTURETEST"));
-}
-
-
-/**
- * Test the Shared<>::teardown() method.
+ * Test the Shared::teardown() method.
  */
 TEST_F(SharedFixtureTest, teardown) {
     environ.teardown();

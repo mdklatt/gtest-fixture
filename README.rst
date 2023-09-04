@@ -7,8 +7,31 @@ gtest-fixture
 |license|
 |tests|
 
+========
+Overview
+========
 
 Test fixture mixins to add capabilities to `GoogleTest`_ tests.
+
+EnvironFixture
+--------------
+
+Modify environment variables for testing. Changes will be rolled back when the
+fixture is destroyed. Note that changes to the environment are *not*
+thread-safe.
+
+TmpDirFixture
+-------------
+
+Provide tmp directories for testing. A numbered directory will be created for
+each test run, and every test within that run will have its own dedicated
+subdirectory. Run directories are *not* removed on exit and will be
+available for inspection until the run directory is recycled.
+
+A ``TmpDirFixture`` can only be instantiated at test scope, so it should not be
+used with the ``Shared<>`` adaptor. However, the static ``run_path()`` method
+can be used to create a shared directory for multiple tests across one or more
+test suites.
 
 
 =====
@@ -67,28 +90,13 @@ method. `Global resource sharing`_ is similar.
     }
 
 
+CTest
+-----
 
-Fixtures
---------
+Shared resources do not work as expected when using `CTest`_ with the
+`GoogleTest module`_. The tests are run individually rather than as a single
+executable, and thus they cannot depend on side effects from another test.
 
-``EnvironFixture``
-
-Modify environment variables for testing. Changes will be rolled back when the
-fixture is destroyed. Note that changes to the environment are *not*
-thread-safe.
-
-
-``TmpDirFixture``
-
-Provide tmp directories for testing. A numbered directory will be created for
-each test run, and every test within that run will have its own dedicated
-subdirectory. Run directories are *not* removed on exit and will be
-available for inspection until the run directory is recycled.
-
-A ``TmpDirFixture`` can only be instantiated at test scope, so it should not be
-used with the ``Shared<>`` adaptor. However, the static ``run_path()`` method
-can be used to create a shared directory for multiple tests across one or more
-test suites.
 
 
 ===========
@@ -134,8 +142,10 @@ Build documentation:
    :alt: CI Test
    :target: `GitHub Actions`_
 
+.. _CTest: https://cmake.org/cmake/help/latest/manual/ctest.1.html
 .. _GitHub Actions: https://github.com/mdklatt/gtest-fixture/actions/workflows/test.yml
 .. _Global resource sharing: https://google.github.io/googletest/advanced.html#global-set-up-and-tear-down
 .. _GoogleTest: http://google.github.io/googletest/
+.. _GoogleTest module: https://cmake.org/cmake/help/latest/module/GoogleTest.html
 .. _MIT License: http://choosealicense.com/licenses/mit
 .. _share resources across a test suite: https://google.github.io/googletest/advanced.html#sharing-resources-between-tests-in-the-same-test-suite
