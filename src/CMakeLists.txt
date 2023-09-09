@@ -2,6 +2,7 @@
 
 add_library(${name}
     environ.cpp
+    output.cpp
     shared.cpp
     tmpdir.cpp
 )
