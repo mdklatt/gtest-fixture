@@ -23,7 +23,7 @@ namespace testing::fixture {
          * Default constructor.
          */
         template <typename ...Args>
-        explicit Shared(Args... args) :
+        explicit Shared(Args&&... args) :
             fixture{std::make_unique<Fixture>(args...)} {}
 
         /**
@@ -41,7 +41,10 @@ namespace testing::fixture {
          * @return instance pointer
          */
         Fixture const* operator->() const {
-            return operator->();
+            if (not fixture) {
+                throw std::logic_error{"invalid fixture pointer"};
+            }
+            return fixture.get();
         }
 
         /** @overload */

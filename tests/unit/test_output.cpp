@@ -53,7 +53,7 @@ TEST_F(OutputFixtureTest, passthru) {
 
 
 /**
- * Test the OutputFixture::str() method;
+ * Test the OutputFixture::str() method.
  */
 TEST_F(OutputFixtureTest, str) {
     ostringstream stream;
@@ -64,10 +64,24 @@ TEST_F(OutputFixtureTest, str) {
 
 
 /**
- * Test OutputFixture capture of std::cout;
+ * Test OutputFixture capture of std::cout.
  */
 TEST_F(OutputFixtureTest, cout) {
     OutputFixture fixture{std::cout};
     std::cout << "abc";
     EXPECT_EQ("abc", fixture.str());
+}
+
+
+/**
+ * Test OutputFixture with the Shared<> adaptor.
+ */
+TEST_F(OutputFixtureTest, shared) {
+    ostringstream stream;
+    Shared<OutputFixture> fixture{stream};
+    stream << "abc";
+    EXPECT_EQ("abc", fixture->str());
+    fixture.teardown();
+    stream << "xyz";
+    EXPECT_EQ("xyz", stream.str());
 }

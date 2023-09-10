@@ -4,6 +4,7 @@
 #ifndef GTEST_FIXTURE_OUTPUT_HPP
 #define GTEST_FIXTURE_OUTPUT_HPP
 
+#include "shared.hpp"
 #include <ostream>
 #include <sstream>
 #include <streambuf>
@@ -39,8 +40,6 @@ public:
 
 private:
     static constexpr auto eof{traits_type::eof()};
-    static constexpr size_t buflen{1024};
-    std::vector<char> buffer;
     std::streambuf* sbuf1{nullptr};
     std::streambuf* sbuf2{nullptr};
 };
