@@ -3,7 +3,6 @@
 add_library(${name}
     environ.cpp
     output.cpp
-    shared.cpp
     tmpdir.cpp
 )
 add_library(gtest-fixture::gtest-fixture ALIAS gtest-fixture)

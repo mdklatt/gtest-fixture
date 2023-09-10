@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 
 project(gtest-fixture
     # Semantic Versioning: <https://semver.org>
-    VERSION 0.1.0.13  # add build number to designate a dev version
+    VERSION 0.1.0.14  # add build number to designate a dev version
     LANGUAGES CXX
 )
 

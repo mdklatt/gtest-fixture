@@ -22,29 +22,40 @@ namespace testing::fixture {
         /**
          * Default constructor.
          */
-        Shared() = default;
+        template <typename ...Args>
+        explicit Shared(Args... args) :
+            fixture{std::make_unique<Fixture>(args...)} {}
 
         /**
          * Tear down the underlying fixture.
          *
          * This must be called in the `TearDown` method of the desired scope.
          */
-        void teardown();
+        void teardown() {
+            fixture = nullptr;
+        }
 
         /**
          * Access the underlying fixture instance.
          *
          * @return instance pointer
          */
-        Fixture const* operator->() const;
+        Fixture const* operator->() const {
+            return operator->();
+        }
 
         /** @overload */
-        Fixture* operator->();
+        Fixture* operator->() {
+            if (not fixture) {
+                throw std::logic_error{"invalid fixture pointer"};
+            }
+            return fixture.get();
+        }
 
         Shared(const Shared&) = delete;
 
     private:
-        std::unique_ptr<Fixture> fixture{std::make_unique<Fixture>()};
+        std::unique_ptr<Fixture> fixture;
     };
 }
 
