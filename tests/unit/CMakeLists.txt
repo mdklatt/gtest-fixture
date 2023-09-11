@@ -2,6 +2,7 @@
 
 add_executable(test_${name}
     test_envrion.cpp
+    test_input.cpp
     test_output.cpp
     test_shared.cpp
     test_tmpdir.cpp

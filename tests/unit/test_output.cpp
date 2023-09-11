@@ -19,7 +19,7 @@ using std::make_unique;
 
 
 /**
- * Test suite for the EnvironFixture class.
+ * Test suite for the OutputFixture class.
  */
 class OutputFixtureTest: public Test {};
 
