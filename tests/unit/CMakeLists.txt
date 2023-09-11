@@ -1,7 +1,7 @@
 # Define targets.
 
 add_executable(test_${name}
-    test_envrion.cpp
+    test_environ.cpp
     test_input.cpp
     test_output.cpp
     test_shared.cpp
