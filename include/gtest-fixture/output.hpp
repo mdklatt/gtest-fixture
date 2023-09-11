@@ -59,6 +59,13 @@ public:
     explicit OutputFixture(std::ostream& stream, bool passthru = false);
 
     /**
+     * Destruct an instance.
+     *
+     * The captured stream will be restored to its original state.
+     */
+    virtual ~OutputFixture();
+
+    /**
      * Get the captured output.
      *
      * @return
@@ -66,11 +73,9 @@ public:
     std::string str() const;
 
     /**
-     * Destruct an instance.
-     *
-     * The captured stream will be restored to its original state.
+     * Clear captured output.
      */
-    virtual ~OutputFixture();
+   void clear();
 
 private:
     TeeBuffer teebuf;

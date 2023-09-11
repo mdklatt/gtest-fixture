@@ -41,3 +41,8 @@ OutputFixture::~OutputFixture() {
 string OutputFixture::str() const {
     return target.str();
 }
+
+
+void OutputFixture::clear() {
+    target.str("");
+}

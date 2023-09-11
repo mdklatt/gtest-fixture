@@ -64,6 +64,18 @@ TEST_F(OutputFixtureTest, str) {
 
 
 /**
+ * Test the OutputFixture::clear() method.
+ */
+TEST_F(OutputFixtureTest, clear) {
+    ostringstream stream;
+    OutputFixture fixture{stream};
+    stream << "abc";
+    fixture.clear();
+    EXPECT_TRUE(fixture.str().empty());
+}
+
+
+/**
  * Test OutputFixture capture of std::cout.
  */
 TEST_F(OutputFixtureTest, cout) {
