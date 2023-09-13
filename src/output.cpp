@@ -1,7 +1,10 @@
 #include "gtest-fixture/output.hpp"
+#include <fstream>
 #include <stdexcept>
 
 using std::invalid_argument;
+using std::make_unique;
+using std::ofstream;
 using std::ostream;
 using std::streambuf;
 using std::string;
@@ -23,26 +26,14 @@ int TeeBuffer::overflow(int c) {
 }
 
 
-OutputFixture::OutputFixture(ostream& stream, bool passthru) :
-    origin{stream.rdbuf()},
-    stream{stream} {
+OutputFixture::OutputFixture(ostream& stream, ostream& dest, bool passthru):
+    teebuf{dest.rdbuf(), passthru ? stream.rdbuf() : nullptr},
+    stream{stream},
+    origin{stream.rdbuf(&teebuf)} {
     origin->pubsync();
-    auto strbuf2{passthru ? origin : nullptr};
-    teebuf = TeeBuffer{target.rdbuf(), strbuf2};
-    stream.rdbuf(&teebuf);
 }
 
 
 OutputFixture::~OutputFixture() {
     stream.rdbuf(origin);
-}
-
-
-string OutputFixture::str() const {
-    return target.str();
-}
-
-
-void OutputFixture::clear() {
-    target.str("");
 }

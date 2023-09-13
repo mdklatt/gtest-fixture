@@ -5,10 +5,13 @@
 #define GTEST_FIXTURE_OUTPUT_HPP
 
 #include "shared.hpp"
+#include <filesystem>
+#include <memory>
 #include <ostream>
 #include <sstream>
 #include <streambuf>
 #include <vector>
+
 
 namespace testing::fixture {
 
@@ -53,10 +56,11 @@ public:
     /**
      * Construct a new instance.
      *
-     * @param stream stream to capture
-     * @param passthru pass captured output along to the original stream
+     * @param stream captured stream
+     * @param dest destination stream
+     * @param passthru pass captured input along to the original stream
      */
-    explicit OutputFixture(std::ostream& stream, bool passthru = false);
+    OutputFixture(std::ostream& stream, std::ostream& dest, bool passthru = false);
 
     /**
      * Destruct an instance.
@@ -65,21 +69,8 @@ public:
      */
     virtual ~OutputFixture();
 
-    /**
-     * Get the captured output.
-     *
-     * @return
-     */
-    std::string str() const;
-
-    /**
-     * Clear captured output.
-     */
-   void clear();
-
 private:
     TeeBuffer teebuf;
-    std::ostringstream target;
     std::streambuf* origin;
     std::ostream& stream;
 };
