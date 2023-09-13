@@ -28,49 +28,17 @@ using std::unique_ptr;
  * Test suite for the EnvironFixture class.
  */
 class InputFixtureTest: public Test {
-private:
-    TmpDirFixture tmpdir;
-
 protected:
-    /**
-     * Per-test setup run before each test.
-     */
-    InputFixtureTest() {
-        ofstream stream{path};
-        stream << "abc";
-    }
-
-    std::filesystem::path path{tmpdir.test_path() / "test.txt"};
+    istringstream input{"abc"};
 };
 
 
 /**
- * Test the InputFixture constructor for stream input.
+ * Test InputFixture stream capture.
  */
-TEST_F(InputFixtureTest, ctor_stream) {
+TEST_F(InputFixtureTest, capture) {
     istringstream stream;
-    ifstream input{path};
     InputFixture fixture{stream, input};
-    EXPECT_EQ('a', stream.get());
-}
-
-
-/**
- * Test InputFixture constructor for string input.
- */
-TEST_F(InputFixtureTest, ctor_string) {
-    istringstream stream;
-    InputFixture fixture{stream, string{"abc"}};
-    EXPECT_EQ('a', stream.get());
-}
-
-
-/**
- * Test InputFixture constructor for file input.
- */
-TEST_F(InputFixtureTest, ctor_path) {
-    istringstream stream;
-    InputFixture fixture{stream, path};
     EXPECT_EQ('a', stream.get());
 }
 
@@ -80,7 +48,7 @@ TEST_F(InputFixtureTest, ctor_path) {
  */
 TEST_F(InputFixtureTest, dtor) {
     istringstream stream{"xyz"};
-    auto fixture{make_unique<InputFixture>(stream, path)};
+    auto fixture{make_unique<InputFixture>(stream, input)};
     EXPECT_EQ('a', stream.get());
     fixture.reset();  // call ~InputFixture()
     EXPECT_EQ('x', stream.get());
@@ -91,7 +59,7 @@ TEST_F(InputFixtureTest, dtor) {
  * Test InputFixture capture of std::cin.
  */
 TEST_F(InputFixtureTest, cin) {
-    InputFixture fixture{std::cin, path};
+    InputFixture fixture{std::cin, input};
     EXPECT_EQ('a', std::cin.get());
 }
 
@@ -101,7 +69,7 @@ TEST_F(InputFixtureTest, cin) {
  */
 TEST_F(InputFixtureTest, shared) {
     istringstream stream{"xyz"};
-    Shared<InputFixture> fixture{stream, path};
+    Shared<InputFixture> fixture{stream, input};
     EXPECT_EQ('a', stream.get());
     fixture.teardown();
     EXPECT_EQ('x', stream.get());

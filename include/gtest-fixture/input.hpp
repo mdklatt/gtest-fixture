@@ -29,12 +29,6 @@ public:
      */
     InputFixture(std::istream& stream, std::istream& input);
 
-    /** @overload */
-    InputFixture(std::istream& stream, const std::string& input);
-
-    /** @overload */
-    InputFixture(std::istream& stream, const std::filesystem::path& input);
-
     /**
      * Destruct an instance.
      *
@@ -43,7 +37,6 @@ public:
     virtual ~InputFixture();
 
 private:
-    std::unique_ptr<std::istream> buffer;
     std::streambuf* origin;
     std::istream& stream;
 };

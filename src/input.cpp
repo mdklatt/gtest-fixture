@@ -15,18 +15,6 @@ InputFixture::InputFixture(istream& stream, std::istream& input):
     stream{stream} {}
 
 
-InputFixture::InputFixture(istream& stream, const std::string& input):
-    buffer{make_unique<istringstream>(input)},
-    origin{stream.rdbuf(buffer->rdbuf())},
-    stream{stream} {}
-
-
-InputFixture::InputFixture(istream& stream, const std::filesystem::path& input):
-    buffer{make_unique<ifstream>(input)},
-    origin{stream.rdbuf(buffer->rdbuf())},
-    stream{stream} {}
-
-
 InputFixture::~InputFixture() {
     stream.rdbuf(origin);
 }
