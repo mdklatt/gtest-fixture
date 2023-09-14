@@ -1,8 +1,8 @@
 /**
  * Capture output streams for inspection.
  */
-#ifndef GTEST_FIXTURE_OUTPUT_HPP
-#define GTEST_FIXTURE_OUTPUT_HPP
+#ifndef GTEST_FIXTURE_STREAM_HPP
+#define GTEST_FIXTURE_STREAM_HPP
 
 #include "shared.hpp"
 #include <filesystem>
@@ -14,6 +14,32 @@
 
 
 namespace testing::fixture {
+
+/**
+ * Replace the contents of an input stream.
+ */
+class InputFixture {
+public:
+    /**
+     * Construct a new instance.
+     *
+     * @param stream stream to capture
+     * @param input new stream contents
+     */
+    InputFixture(std::istream& stream, std::istream& input);
+
+    /**
+     * Destruct an instance.
+     *
+     * The original contents of the input stream will be restored.
+     */
+    virtual ~InputFixture();
+
+private:
+    std::streambuf* origin;
+    std::istream& stream;
+};
+
 
 /**
  * Send output to one or two streams.
@@ -78,4 +104,4 @@ private:
 }  // testing::fixture
 
 
-#endif  // GTEST_FIXTURE_OUTPUT_HPP
+#endif  // GTEST_FIXTURE_STREAM_HPP

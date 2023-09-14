@@ -1,15 +1,27 @@
-#include "gtest-fixture/output.hpp"
+#include "gtest-fixture/stream.hpp"
 #include <fstream>
 #include <stdexcept>
 
 using std::invalid_argument;
+using std::istream;
 using std::make_unique;
 using std::ofstream;
 using std::ostream;
 using std::streambuf;
 using std::string;
+using testing::fixture::InputFixture;
 using testing::fixture::OutputFixture;
 using testing::fixture::TeeBuffer;
+
+
+InputFixture::InputFixture(istream& stream, std::istream& input):
+        origin{stream.rdbuf(input.rdbuf())},
+        stream{stream} {}
+
+
+InputFixture::~InputFixture() {
+    stream.rdbuf(origin);
+}
 
 
 TeeBuffer::TeeBuffer(streambuf* strbuf1, streambuf* sbuf2):

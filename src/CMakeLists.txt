@@ -2,8 +2,7 @@
 
 add_library(${name}
     environ.cpp
-    input.cpp
-    output.cpp
+    stream.cpp
     tmpdir.cpp
 )
 add_library(gtest-fixture::gtest-fixture ALIAS gtest-fixture)
