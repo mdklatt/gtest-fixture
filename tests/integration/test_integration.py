@@ -87,9 +87,9 @@ def app(request, build_dir) -> Path:
     """
     defs = request.getfixturevalue(request.param)
     defs |= {"CMAKE_BUILD_TYPE": "Release"}
-    local_dir = Path(__file__).parent / "libtest"
+    local_dir = Path(__file__).parent / "src"
     _build(local_dir, build_dir, defs)
-    return build_dir / "libtest"
+    return build_dir / "test_lib"
 
 
 def test_lib(app):

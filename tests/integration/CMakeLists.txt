@@ -1,5 +1,5 @@
 # Verify that the installed libraries are usable to downstream applications via
-# CMake. The sample application 'libtest' is built using both the project
+# CMake. The sample application 'test_lib' is built using both the project
 # tree and an installed version.
 
 # Give find_package() some help locating the correct Python executable.
