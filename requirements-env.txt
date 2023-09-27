@@ -1,0 +1,3 @@
+# Requirements for the local development environment.
+conan>=2.0.10,<3
+pytest>=7.3.2,<8

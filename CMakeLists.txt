@@ -2,19 +2,11 @@ cmake_minimum_required(VERSION 3.16)
 
 project(gtest-fixture
     # Semantic Versioning: <https://semver.org>
-    VERSION 0.1.0.20  # add build number to designate a dev version
+    VERSION 0.1.0.21  # add build number to designate a dev version
     LANGUAGES CXX
 )
 
-include(FetchContent)
-FetchContent_Declare(googletest
-    GIT_REPOSITORY https://github.com/google/googletest.git
-    GIT_TAG v1.13.0
-)
-FetchContent_MakeAvailable(googletest)
-
-
-list(INSERT CMAKE_MODULE_PATH 0 ${PROJECT_SOURCE_DIR}/cmake)
+list(INSERT CMAKE_MODULE_PATH 0 ${PROJECT_SOURCE_DIR}/cmake ${CMAKE_BINARY_DIR})
 include(DebugASanBuildType)
 
 option(BUILD_DOCS "Build documentation" OFF)
@@ -23,6 +15,9 @@ set(name ${PROJECT_NAME})
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+
+
+find_package(GTest REQUIRED)
 
 add_subdirectory(src)
 

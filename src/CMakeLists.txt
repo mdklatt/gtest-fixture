@@ -43,7 +43,7 @@ write_basic_package_version_file(
 
 include(GNUInstallDirs)
 
-install(TARGETS ${name} gtest
+install(TARGETS ${name}
     EXPORT gtest-fixture-targets
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}

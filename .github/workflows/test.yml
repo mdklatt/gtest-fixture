@@ -15,18 +15,22 @@ jobs:
     steps:
       - name: Check out project
         uses: actions/checkout@v3
+      - name: Set up CMake
+        uses: jwlawson/actions-setup-cmake@v1.14
+        with:
+          cmake-version: "3.16"
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.x"  # latest installed version
-      - name: Install Python dependencies
+      - name: Set up development environment
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -r requirements-dev.txt
-      - name: Setup cmake
-        uses: jwlawson/actions-setup-cmake@v1.14
-        with:
-          cmake-version: "3.16"
+          python -m pip install --upgrade -r requirements-env.txt
+      - name: Install dependencies
+        run: |
+          conan profile detect
+          conan install --output-folder=$BUILD_ROOT -s build_type=$BUILD_TYPE -s compiler.cppstd=17 --build missing .
       - name: Build project
         run: |
           cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBUILD_TESTING=ON -S . -B $BUILD_ROOT
