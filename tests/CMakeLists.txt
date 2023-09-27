@@ -1,2 +1,4 @@
 add_subdirectory(unit)
-add_subdirectory(integration)
+
+# TODO: Adapt this to use Conan.
+# add_subdirectory(integration)
