@@ -25,7 +25,7 @@ class GTestFixtureRecipe(ConanFile):
         """
         root = Path("build")
         if self.settings.get_safe("compiler") == "msvc":
-            # MSVC is a mult-config generator.
+            # MSVC is a multi-config generator.
             self.folders.generators = root / "conan"
         else:
             build = str(self.settings.build_type)
