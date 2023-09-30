@@ -2,6 +2,7 @@
 
 BUILD_TYPE = Debug
 BUILD_ROOT = build/$(BUILD_TYPE)
+CONAN_ROOT = $(BUILD_ROOT)/conan
 VENV = .venv
 CONAN = . $(VENV)/bin/activate && conan
 PYTHON = . $(VENV)/bin/activate && python
@@ -14,13 +15,13 @@ $(VENV)/.make-update: requirements-env.txt
 	touch $@
 
 
-$(BUILD_ROOT)/conan_toolchain.cmake: conanfile.txt
-	$(CONAN) install --output-folder=$(BUILD_ROOT) -s build_type=$(BUILD_TYPE) -s compiler.cppstd=17 --build missing .
+$(CONAN_ROOT)/conan_toolchain.cmake: conanfile.py
+	$(CONAN) install -s build_type=$(BUILD_TYPE) -s compiler.cppstd=17 --build missing .
 
 
 .PHONY: dev
-dev: $(VENV)/.make-update $(BUILD_ROOT)/conan_toolchain.cmake
-	cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DCMAKE_TOOLCHAIN_FILE=$(BUILD_ROOT)/conan_toolchain.cmake -DBUILD_TESTING=ON -DBUILD_DOCS=ON -S . -B $(BUILD_ROOT)
+dev: $(VENV)/.make-update $(CONAN_ROOT)/conan_toolchain.cmake
+	cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)  -DBUILD_TESTING=ON -DBUILD_DOCS=ON -S . -B $(BUILD_ROOT)
 
 
 .PHONY: build

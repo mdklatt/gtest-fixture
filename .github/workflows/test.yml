@@ -30,7 +30,7 @@ jobs:
       - name: Install dependencies
         run: |
           conan profile detect
-          conan install --output-folder=$BUILD_ROOT -s build_type=$BUILD_TYPE -s compiler.cppstd=17 --build missing .
+          conan install -s build_type=$BUILD_TYPE -s compiler.cppstd=17 --build missing .
       - name: Build project
         run: |
           cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBUILD_TESTING=ON -S . -B $BUILD_ROOT

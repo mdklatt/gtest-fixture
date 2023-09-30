@@ -6,7 +6,7 @@ project(gtest-fixture
     LANGUAGES CXX
 )
 
-list(INSERT CMAKE_MODULE_PATH 0 ${PROJECT_SOURCE_DIR}/cmake ${CMAKE_BINARY_DIR})
+list(INSERT CMAKE_MODULE_PATH 0 ${PROJECT_SOURCE_DIR}/cmake ${CMAKE_BINARY_DIR}/conan)
 include(DebugASanBuildType)
 
 option(BUILD_DOCS "Build documentation" OFF)
