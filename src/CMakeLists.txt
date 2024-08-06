@@ -2,6 +2,7 @@
 
 add_library(${name}
     environ.cpp
+    network.cpp
     stream.cpp
     tmpdir.cpp
 )

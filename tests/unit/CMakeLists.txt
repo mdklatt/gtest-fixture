@@ -2,6 +2,7 @@
 
 add_executable(test_${name}
     test_environ.cpp
+    test_network.cpp
     test_shared.cpp
     test_stream.cpp
     test_tmpdir.cpp

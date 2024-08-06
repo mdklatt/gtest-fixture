@@ -4,7 +4,6 @@
 #ifndef GTEST_FIXTURE_STREAM_HPP
 #define GTEST_FIXTURE_STREAM_HPP
 
-#include "shared.hpp"
 #include <filesystem>
 #include <memory>
 #include <ostream>
