@@ -48,9 +48,17 @@ ServerFixture::~ServerFixture() {
 }
 
 
-int ServerFixture::port() const {
-    const auto addr_inet = reinterpret_cast<sockaddr_in*>(addr->ai_addr);
-    return ntohs(addr_inet->sin_port);
+in_port_t ServerFixture::port() const {
+    if (stopped) {
+        return 0;
+    }
+    sockaddr_in addr_in{};
+    socklen_t len = sizeof(addr);
+    if (getsockname(socket, reinterpret_cast<sockaddr*>(&addr_in), &len) == -1) {
+        const auto error{strerror(errno)};
+        throw runtime_error{"socket error: " + string{error}};
+    }
+    return ntohs(addr_in.sin_port);
 }
 
 
@@ -60,6 +68,8 @@ int ServerFixture::client() const {
         const auto error{strerror(errno)};
         throw runtime_error{"socket error: " + string{error}};
     }
+    auto addr_in{reinterpret_cast<sockaddr_in*>(addr->ai_addr)};
+    addr_in->sin_port = htons(port());
     if (::connect(sock, addr->ai_addr, addr->ai_addrlen) == -1) {
         const auto error{strerror(errno)};
         throw runtime_error{"connect error: " + string{error}};
@@ -93,7 +103,7 @@ void ServerFixture::stop() {
     if (stopped) {
         return;
     }
-    stopped.store(true);
+    stopped = true;  // poll() will exit after its current loop
     serve.wait();
     if (socket != -1) {
         shutdown(socket, SHUT_RDWR);

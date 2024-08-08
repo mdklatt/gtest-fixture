@@ -47,9 +47,11 @@ public:
     /**
      * The port number the server is listening on.
      *
+     * This returns 0 if the server has not been started yet.
+     *
      * @return port number
      */
-    int port() const;
+    in_port_t port() const;
 
     /**
      * Return all data received at the listening port.

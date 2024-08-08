@@ -23,7 +23,7 @@ using std::vector;
 class ServerFixtureTest: public Test {
 protected:
     vector<char> buffer;
-    ServerFixture fixture{8000};
+    ServerFixture fixture;
 };
 
 
@@ -31,7 +31,11 @@ protected:
  * Test the ServerFixture::port() method.
  */
 TEST_F(ServerFixtureTest, port) {
-    EXPECT_EQ(fixture.port(), 8000);
+    static const auto port{8974};  // beware of existing usages
+    ServerFixture fixture{port};
+    ASSERT_EQ(0, fixture.port());  // not running yet
+    fixture.start();
+    ASSERT_EQ(port, fixture.port());
 }
 
 
@@ -40,6 +44,7 @@ TEST_F(ServerFixtureTest, port) {
  */
 TEST_F(ServerFixtureTest, comm) {
     fixture.start();
+    ASSERT_NE(fixture.port(), 0);
     auto client{fixture.client()};  // caller must shutdown()
     const vector<char> bytes{'T', 'E', 'S', 'T'};
     send(client, bytes.data(), bytes.size(), 0);
