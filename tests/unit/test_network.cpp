@@ -101,6 +101,7 @@ TEST_F(TcpServerFixtureTest, comm) {
     shutdown(client, SHUT_RDWR);
     fixture.stop();
     EXPECT_EQ(bytes, fixture.data());
+    EXPECT_EQ("TEST", fixture.text());
 }
 
 

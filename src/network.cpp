@@ -180,6 +180,11 @@ const vector<char>& TcpServerFixture::data() const {
 }
 
 
+string TcpServerFixture::text() const {
+    return {bytes.begin(), bytes.end()};
+}
+
+
 void TcpServerFixture::start() {
     if (not stopped) {
         return;

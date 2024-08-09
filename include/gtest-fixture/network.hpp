@@ -114,6 +114,16 @@ public:
     const std::vector<char>& data() const;
 
     /**
+     * Return all data received at the listening port as text.
+     *
+     * Data buffers are every time the server is started.
+     *
+     * @param client socket descriptor
+     * @return text
+     */
+    std::string text() const;
+
+    /**
      * Start the server asynchronously.
      *
      * This is nonblocking. The server will listen in a separate thread until
@@ -125,7 +135,6 @@ public:
      * Stop the server.
      */
     void stop();
-
 
     // Prohibited operations.
     TcpServerFixture(const TcpServerFixture&) = delete;
