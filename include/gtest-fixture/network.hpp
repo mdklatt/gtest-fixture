@@ -16,12 +16,12 @@ namespace testing::fixture {
 /**
  * Find an available TCP port on localhost.
  */
-class AvailablePort {
+class TcpPortFixture {
 public:
     /**
      * Initialize this instance to an available port.
      */
-    AvailablePort();
+    TcpPortFixture();
 
     /**
      * Get the fixture's current port value.

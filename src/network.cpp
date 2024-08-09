@@ -21,7 +21,7 @@ using std::string;
 using std::to_string;
 using std::unique_ptr;
 using std::vector;
-using testing::fixture::AvailablePort;
+using testing::fixture::TcpPortFixture;
 using testing::fixture::ServerFixture;
 
 
@@ -92,15 +92,15 @@ int bind_socket(int sock, const addrinfo* addr) {
 }  // internal linkage
 
 
-const unique_ptr<addrinfo, void (*)(addrinfo*)> AvailablePort::addr{create_address()};
+const unique_ptr<addrinfo, void (*)(addrinfo*)> TcpPortFixture::addr{create_address()};
 
 
-AvailablePort::operator in_port_t() const {
+TcpPortFixture::operator in_port_t() const {
     return port;
 }
 
 
-in_port_t AvailablePort::reset() {
+in_port_t TcpPortFixture::reset() {
     // Temporarily bind a socket local socket to get its auto-assigned port
     // number. There is no guarantee that the port number will still be
     // available once the caller attempts to use that port.
@@ -117,7 +117,7 @@ in_port_t AvailablePort::reset() {
 }
 
 
-int AvailablePort::bind() {
+int TcpPortFixture::bind() {
     size_t max_attempts{10};
     int sock{-1};
     while (max_attempts-- > 0) {
@@ -141,7 +141,7 @@ int AvailablePort::bind() {
 }
 
 
-AvailablePort::AvailablePort() {
+TcpPortFixture::TcpPortFixture() {
     reset();
 }
 
