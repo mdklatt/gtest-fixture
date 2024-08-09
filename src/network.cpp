@@ -21,26 +21,136 @@ using std::string;
 using std::to_string;
 using std::unique_ptr;
 using std::vector;
+using testing::fixture::AvailablePort;
 using testing::fixture::ServerFixture;
+
+
+namespace {
+
+/**
+ * Create a local TCP socket address.
+ *
+ * @param port port number (0 to auto assign at bind time)
+ * @return socket address
+ */
+unique_ptr<addrinfo, void (*)(addrinfo*)> create_address(in_port_t port=0) {
+    const auto port_str{to_string(port)};
+    addrinfo hints{};
+    hints.ai_family = AF_INET;
+    hints.ai_socktype = SOCK_STREAM;
+    addrinfo* addr;
+    int status;
+    if ((status = getaddrinfo("localhost", port_str.c_str(), &hints, &addr)) != 0) {
+        const auto error{gai_strerror(status)};
+        throw runtime_error{"addrinfo error:" + string{error}};
+    }
+    return {addr, freeaddrinfo};
+}
+
+
+/**
+ * Create a local TCP socket
+ *
+ * @param addr socket address
+ * @return socket descriptor
+ */
+int create_socket(const addrinfo* addr) {
+    auto sock{socket(addr->ai_family, addr->ai_socktype, addr->ai_protocol)};
+    if (sock == -1) {
+        const auto error{strerror(errno)};
+        throw runtime_error{"socket error: " + string{error}};
+    }
+    static const int reuse{1};  // reuse port
+    setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse));
+    return sock;
+}
+
+
+/**
+ * Bind a TCP socket to a local port.
+ *
+ * @param addr socket address
+ * @param sock socket descriptor
+ * @return bound port number
+ */
+int bind_socket(int sock, const addrinfo* addr) {
+    // Need to use getsockname() to get the port number for the case where
+    // auto-assigment is used (port=0).
+    if (bind(sock, addr->ai_addr, addr->ai_addrlen) == -1) {
+        const auto error{strerror(errno)};
+        throw runtime_error{"bind error: " + string{error}};
+    }
+    sockaddr_in addr_in{};
+    socklen_t len{sizeof(addr_in)};
+    if (getsockname(sock, reinterpret_cast<sockaddr*>(&addr_in), &len) == -1) {
+        const auto error{strerror(errno)};
+        throw runtime_error{"getsockname error: " + string{error}};
+    }
+    return ntohs(addr_in.sin_port);
+}
+
+}  // internal linkage
+
+
+const unique_ptr<addrinfo, void (*)(addrinfo*)> AvailablePort::addr{create_address()};
+
+
+AvailablePort::operator in_port_t() const {
+    return port;
+}
+
+
+in_port_t AvailablePort::reset() {
+    // Temporarily bind a socket local socket to get its auto-assigned port
+    // number. There is no guarantee that the port number will still be
+    // available once the caller attempts to use that port.
+    auto sock{create_socket(addr.get())};
+    try {
+        port = bind_socket(sock, addr.get());
+    }
+    catch (...) {
+        shutdown(sock, SHUT_RDWR);
+        throw;
+    }
+    shutdown(sock, SHUT_RDWR);
+    return port;
+}
+
+
+int AvailablePort::bind() {
+    size_t max_attempts{10};
+    int sock{-1};
+    while (max_attempts-- > 0) {
+        // Attempt to bind the current port to a socket.
+        const auto port_addr{create_address(port)};
+        sock = create_socket(port_addr.get());
+        if (::bind(sock, port_addr->ai_addr, port_addr->ai_addrlen) == -1) {
+            if (errno == EADDRINUSE) {
+                // Port is not free, try again.
+                reset();
+                continue;
+            }
+            const auto error{strerror(errno)};
+            throw runtime_error{"bind error: " + string{error}};
+        }
+    }
+    if (max_attempts == 0) {
+        throw runtime_error{"could not find an available port"};
+    }
+    return sock;
+}
+
+
+AvailablePort::AvailablePort() {
+    reset();
+}
 
 
 // Adapted from <https://beej.us/guide/bgnet/html/split-wide/system-calls-or-bust.html#system-calls-or-bust>.
 
 
 ServerFixture::ServerFixture(in_port_t port):
-    addr{nullptr, freeaddrinfo} {
-    const auto port_str{to_string(port)};
-    addrinfo hints{};
-    hints.ai_family = AF_INET;
-    hints.ai_socktype = SOCK_STREAM;
-    addrinfo* addr_ptr;
-    int status;
-    if ((status = getaddrinfo("localhost", port_str.c_str(), &hints, &addr_ptr)) != 0) {
-        const auto error{gai_strerror(status)};
-        throw runtime_error{"addrinfo error:" + string{error}};
-    }
-    addr.reset(addr_ptr);
-}
+    addr{create_address(port)} {}
 
 
 ServerFixture::~ServerFixture() {
@@ -49,25 +159,12 @@ ServerFixture::~ServerFixture() {
 
 
 in_port_t ServerFixture::port() const {
-    if (stopped) {
-        return 0;
-    }
-    sockaddr_in addr_in{};
-    socklen_t len = sizeof(addr);
-    if (getsockname(socket, reinterpret_cast<sockaddr*>(&addr_in), &len) == -1) {
-        const auto error{strerror(errno)};
-        throw runtime_error{"socket error: " + string{error}};
-    }
-    return ntohs(addr_in.sin_port);
+    return port_;
 }
 
 
 int ServerFixture::client() const {
-    auto sock{::socket(addr->ai_family, addr->ai_socktype, addr->ai_protocol)};
-    if (sock == -1) {
-        const auto error{strerror(errno)};
-        throw runtime_error{"socket error: " + string{error}};
-    }
+    auto sock{create_socket(addr.get())};
     auto addr_in{reinterpret_cast<sockaddr_in*>(addr->ai_addr)};
     addr_in->sin_port = htons(port());
     if (::connect(sock, addr->ai_addr, addr->ai_addrlen) == -1) {
@@ -89,7 +186,8 @@ void ServerFixture::start() {
     }
     static const duration<float> delay{0.5};  // seconds
     bytes.clear();
-    connect(addr.get());
+    socket = create_socket(addr.get());
+    port_ = bind_socket(socket, addr.get());
     listen(socket, 0);  // only one concurrent connection allowed
     std::this_thread::sleep_for(delay);  // wait for socket to start listening
     stopped = false;
@@ -109,21 +207,7 @@ void ServerFixture::stop() {
         shutdown(socket, SHUT_RDWR);
         socket = -1;
     }
-}
-
-
-void ServerFixture::connect(const addrinfo* addr) {
-    socket = ::socket(addr->ai_family, addr->ai_socktype, addr->ai_protocol);
-    if (socket == -1) {
-        const auto error{strerror(errno)};
-        throw runtime_error{"socket error: " + string{error}};
-    }
-    static const int reuse{1};  // reuse port
-    setsockopt(socket, SOL_SOCKET,SO_REUSEADDR, &reuse, sizeof(reuse));
-    if (bind(socket, addr->ai_addr, addr->ai_addrlen) == -1) {
-        const auto error{strerror(errno)};
-        throw runtime_error{"bind error: " + string{error}};
-    }
+    port_ = 0;
 }
 
 

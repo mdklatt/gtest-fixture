@@ -5,6 +5,7 @@
  * test runner.
  */
 #include "gtest-fixture/network.hpp"
+#include "gtest-fixture/shared.hpp"
 #include <gtest/gtest.h>
 #include <sys/socket.h>
 #include <chrono>
@@ -18,7 +19,54 @@ using std::vector;
 
 
 /**
- * Test suite for the EnvironFixture class.
+ * Test suite for the AvailablePort class.
+ */
+class AvailablePortTest: public Test {
+protected:
+    AvailablePort port;
+};
+
+
+/**
+ * Test the AvailablePort default constructor.
+ */
+TEST_F(AvailablePortTest, ctor) {
+    EXPECT_NE(port, 0);
+}
+
+
+/**
+ * Test the AvailablePort::reset() method.
+ */
+TEST_F(AvailablePortTest, reset) {
+    const auto save{port};
+    EXPECT_GE(port.reset(), 0);
+    EXPECT_NE(port, save);
+}
+
+
+/**
+ * Test the AvailablePort::bind() method.
+ */
+TEST_F(AvailablePortTest, bind) {
+    const auto sock{port.bind()};
+    EXPECT_GE(sock, 0);
+    shutdown(sock, SHUT_RDWR);
+}
+
+
+/**
+ * Test AvailablePort with the Shared<> adaptor.
+ */
+TEST_F(AvailablePortTest, shared) {
+    Shared<AvailablePort> fixture;
+    EXPECT_NE(fixture->operator in_port_t(), 0);
+    fixture.teardown();
+}
+
+
+/**
+ * Test suite for the ServerFixture class.
  */
 class ServerFixtureTest: public Test {
 protected:
@@ -33,9 +81,9 @@ protected:
 TEST_F(ServerFixtureTest, port) {
     static const auto port{8974};  // beware of existing usages
     ServerFixture fixture{port};
-    ASSERT_EQ(0, fixture.port());  // not running yet
+    EXPECT_EQ(0, fixture.port());  // not running yet
     fixture.start();
-    ASSERT_EQ(port, fixture.port());
+    EXPECT_EQ(port, fixture.port());
 }
 
 
@@ -44,7 +92,7 @@ TEST_F(ServerFixtureTest, port) {
  */
 TEST_F(ServerFixtureTest, comm) {
     fixture.start();
-    ASSERT_NE(fixture.port(), 0);
+    EXPECT_NE(fixture.port(), 0);
     auto client{fixture.client()};  // caller must shutdown()
     const vector<char> bytes{'T', 'E', 'S', 'T'};
     send(client, bytes.data(), bytes.size(), 0);
@@ -53,4 +101,13 @@ TEST_F(ServerFixtureTest, comm) {
     shutdown(client, SHUT_RDWR);
     fixture.stop();
     EXPECT_EQ(bytes, fixture.data());
+}
+
+
+/**
+ * Test AvailablePort with the Shared<> adaptor.
+ */
+TEST_F(ServerFixtureTest, shared) {
+    Shared<ServerFixture> fixture;
+    EXPECT_EQ(fixture->port(), 0);
 }

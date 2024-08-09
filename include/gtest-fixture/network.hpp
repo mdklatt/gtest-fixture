@@ -14,7 +14,57 @@
 namespace testing::fixture {
 
 /**
- * listen for data from a local TCP socket.
+ * Find an available TCP port on localhost.
+ */
+class AvailablePort {
+public:
+    /**
+     * Initialize this instance to an available port.
+     */
+    AvailablePort();
+
+    /**
+     * Get the fixture's current port value.
+     *
+     * There is no guarantee that this port is still available for binding.
+     * See reset() and bind().
+     *
+     * @return
+     */
+    operator in_port_t() const;
+
+    /**
+     * Reset the fixture's port value.
+     *
+     * This can be used to find a new port if the current port has become
+     * unavailable.
+     *
+     * @return new port number
+     */
+     in_port_t reset();
+
+    /**
+     * Bind a TCP socket to the fixture's port value.
+     *
+     * This eliminates the race condition where the port may become unavailable
+     * before it can be bound to a socket. The caller assumes ownership of the
+     * socket.
+     *
+     * This will reset the fixture's current value as necessary to find an
+     * available port.
+     *
+     * @return socket descriptor bound to the current port
+     */
+    int bind();
+
+private:
+    static const std::unique_ptr<addrinfo, void (*)(addrinfo*)> addr;
+    in_port_t port{0};
+};
+
+
+/**
+ * Run a simple TCP server for testing client services.
  */
 class ServerFixture {
 public:
@@ -82,18 +132,11 @@ public:
 
 private:
     int socket{-1};
+    in_port_t port_{0};
     std::unique_ptr<addrinfo, void (*)(addrinfo*)> addr;
     std::future<void> serve;
     std::atomic<bool> stopped{true};
     std::vector<char> bytes;
-
-    /**
-     * Create the listening socket connection.
-     *
-     * @param addr: address object
-     * @return server socket descriptor
-     */
-    void connect(const addrinfo* addr);
 
     /**
      * Accept a connection from a client.
