@@ -22,7 +22,7 @@ using std::to_string;
 using std::unique_ptr;
 using std::vector;
 using testing::fixture::TcpPortFixture;
-using testing::fixture::ServerFixture;
+using testing::fixture::TcpServerFixture;
 
 
 namespace {
@@ -149,21 +149,21 @@ TcpPortFixture::TcpPortFixture() {
 // Adapted from <https://beej.us/guide/bgnet/html/split-wide/system-calls-or-bust.html#system-calls-or-bust>.
 
 
-ServerFixture::ServerFixture(in_port_t port):
+TcpServerFixture::TcpServerFixture(in_port_t port):
     addr{create_address(port)} {}
 
 
-ServerFixture::~ServerFixture() {
+TcpServerFixture::~TcpServerFixture() {
     stop();
 }
 
 
-in_port_t ServerFixture::port() const {
+in_port_t TcpServerFixture::port() const {
     return port_;
 }
 
 
-int ServerFixture::client() const {
+int TcpServerFixture::client() const {
     auto sock{create_socket(addr.get())};
     auto addr_in{reinterpret_cast<sockaddr_in*>(addr->ai_addr)};
     addr_in->sin_port = htons(port());
@@ -175,12 +175,12 @@ int ServerFixture::client() const {
 }
 
 
-const vector<char>& ServerFixture::data() const {
+const vector<char>& TcpServerFixture::data() const {
     return bytes;
 }
 
 
-void ServerFixture::start() {
+void TcpServerFixture::start() {
     if (not stopped) {
         return;
     }
@@ -197,7 +197,7 @@ void ServerFixture::start() {
 }
 
 
-void ServerFixture::stop() {
+void TcpServerFixture::stop() {
     if (stopped) {
         return;
     }
@@ -211,7 +211,7 @@ void ServerFixture::stop() {
 }
 
 
-void ServerFixture::poll() {
+void TcpServerFixture::poll() {
     pollfd listener{};
     listener.fd = socket;
     listener.events = POLLIN;
@@ -248,7 +248,7 @@ void ServerFixture::poll() {
 }
 
 
-int ServerFixture::accept(int sock) {
+int TcpServerFixture::accept(int sock) {
     sockaddr_storage addr{};
     socklen_t len{sizeof(addr)};
     auto client_sock{::accept(sock, reinterpret_cast<sockaddr*>(&addr), &len)};
@@ -260,7 +260,7 @@ int ServerFixture::accept(int sock) {
 }
 
 
-void ServerFixture::read(int sock) {
+void TcpServerFixture::read(int sock) {
     // There is no way to match this side of the connection (`sock`) to the
     // caller's side, e.g. the return value of `client()`. Therefore, there is
     // no point in maintaining a separate buffer for each client connection.

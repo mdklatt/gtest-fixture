@@ -66,7 +66,7 @@ private:
 /**
  * Run a simple TCP server for testing client services.
  */
-class ServerFixture {
+class TcpServerFixture {
 public:
     /**
      * Construct a new fixture instance.
@@ -76,14 +76,14 @@ public:
      * @param callback: callback to execute when data is received
      * @return listening port
      */
-    explicit ServerFixture(in_port_t port=0);
+    explicit TcpServerFixture(in_port_t port=0);
 
     /**
      * Destruct an instance.
      *
      * The original contents of the input stream will be restored.
      */
-    virtual ~ServerFixture();
+    virtual ~TcpServerFixture();
 
     /**
      * Create a client socket for communicating with the fixture.
@@ -128,7 +128,7 @@ public:
 
 
     // Prohibited operations.
-    ServerFixture(const ServerFixture&) = delete;
+    TcpServerFixture(const TcpServerFixture&) = delete;
 
 private:
     int socket{-1};

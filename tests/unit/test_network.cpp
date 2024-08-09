@@ -66,21 +66,21 @@ TEST_F(TcpPortFixtureTest, shared) {
 
 
 /**
- * Test suite for the ServerFixture class.
+ * Test suite for the TcpServerFixture class.
  */
-class ServerFixtureTest: public Test {
+class TcpServerFixtureTest: public Test {
 protected:
     vector<char> buffer;
-    ServerFixture fixture;
+    TcpServerFixture fixture;
 };
 
 
 /**
- * Test the ServerFixture::port() method.
+ * Test the TcpServerFixture::port() method.
  */
-TEST_F(ServerFixtureTest, port) {
+TEST_F(TcpServerFixtureTest, port) {
     static const auto port{8974};  // beware of existing usages
-    ServerFixture fixture{port};
+    TcpServerFixture fixture{port};
     EXPECT_EQ(0, fixture.port());  // not running yet
     fixture.start();
     EXPECT_EQ(port, fixture.port());
@@ -88,9 +88,9 @@ TEST_F(ServerFixtureTest, port) {
 
 
 /**
- * Test ServerFixture communication.
+ * Test TcpServerFixture communication.
  */
-TEST_F(ServerFixtureTest, comm) {
+TEST_F(TcpServerFixtureTest, comm) {
     fixture.start();
     EXPECT_NE(fixture.port(), 0);
     auto client{fixture.client()};  // caller must shutdown()
@@ -107,7 +107,7 @@ TEST_F(ServerFixtureTest, comm) {
 /**
  * Test TcpPortFixture with the Shared<> adaptor.
  */
-TEST_F(ServerFixtureTest, shared) {
-    Shared<ServerFixture> fixture;
+TEST_F(TcpServerFixtureTest, shared) {
+    Shared<TcpServerFixture> fixture;
     EXPECT_EQ(fixture->port(), 0);
 }
