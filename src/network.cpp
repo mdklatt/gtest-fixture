@@ -164,10 +164,9 @@ in_port_t TcpServerFixture::port() const {
 
 
 int TcpServerFixture::client() const {
-    auto sock{create_socket(addr.get())};
-    auto addr_in{reinterpret_cast<sockaddr_in*>(addr->ai_addr)};
-    addr_in->sin_port = htons(port());
-    if (::connect(sock, addr->ai_addr, addr->ai_addrlen) == -1) {
+    auto port_addr{create_address(port_)};
+    auto sock{create_socket(port_addr.get())};
+    if (connect(sock, port_addr->ai_addr, port_addr->ai_addrlen) == -1) {
         const auto error{strerror(errno)};
         throw runtime_error{"connect error: " + string{error}};
     }
