@@ -22,29 +22,45 @@ using std::to_string;
 using std::unique_ptr;
 using std::vector;
 using testing::fixture::TcpPortFixture;
+using testing::fixture::TcpClientFixture;
 using testing::fixture::TcpServerFixture;
 
 
 namespace {
 
+// Adapted from "Beej's Guide to Network Programming".
+// <https://beej.us/guide/bgnet/html/split-wide/system-calls-or-bust.html#system-calls-or-bust>
+
 /**
- * Create a local TCP socket address.
+ * Create a TCP socket address.
  *
- * @param port port number (0 to auto assign at bind time)
+ * @param host: target hostname
+ * @param port: target port
  * @return socket address
  */
-unique_ptr<addrinfo, void (*)(addrinfo*)> create_address(in_port_t port=0) {
+unique_ptr<addrinfo, void (*)(addrinfo *)> create_address(const string &host, in_port_t port) {
     const auto port_str{to_string(port)};
     addrinfo hints{};
     hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_STREAM;
-    addrinfo* addr;
+    addrinfo *addr;
     int status;
-    if ((status = getaddrinfo("localhost", port_str.c_str(), &hints, &addr)) != 0) {
+    if ((status = getaddrinfo(host.c_str(), port_str.c_str(), &hints, &addr)) != 0) {
         const auto error{gai_strerror(status)};
         throw runtime_error{"addrinfo error:" + string{error}};
     }
     return {addr, freeaddrinfo};
+}
+
+
+/**
+ * Create a TCP socket address on localhost.
+ *
+ * @param port port number (0 to auto assign at bind time)
+ * @return socket address
+ */
+unique_ptr<addrinfo, void (*)(addrinfo *)> create_address(in_port_t port = 0) {
+    return create_address("localhost", port);
 }
 
 
@@ -63,6 +79,20 @@ int create_socket(const addrinfo* addr) {
     static const int reuse{1};  // reuse port
     setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse));
     return sock;
+}
+
+
+/**
+ * Connect a socket to a host address.
+ *
+ * @param sock socket descriptor
+ * @param addr target address
+ */
+void connect_socket(int sock, const addrinfo* addr) {
+    if (connect(sock, addr->ai_addr, addr->ai_addrlen) == -1) {
+        const auto error{strerror(errno)};
+        throw runtime_error{"connect error: " + string{error}};
+    }
 }
 
 
@@ -87,6 +117,48 @@ int bind_socket(int sock, const addrinfo* addr) {
         throw runtime_error{"getsockname error: " + string{error}};
     }
     return ntohs(addr_in.sin_port);
+}
+
+
+/**
+ * Send data over a socket.
+ *
+ * @param sock socket descriptor
+ * @param data bytes to send
+ */
+void send_socket(int sock, vector<char> data) {
+    while (data.size() > 0) {
+        // Continue until all data has been sent.
+        const auto count{send(sock, data.data(), data.size(), 0)};
+        if (count == -1) {
+            const auto error{strerror(errno)};
+            throw runtime_error{"send error: " + string{error}};
+        }
+        data.assign(data.begin() + count, data.end());  // trim sent data
+    }
+}
+
+
+/**
+ * Read data over a socket.
+ *
+ * @param sock socket descriptor
+ * @param buflen input buffer lenght
+ * @return bytes
+ */
+vector<char> read_socket(int sock) {
+    vector<char> buffer(1024);
+    vector<char> data;
+    ssize_t count;
+    do {
+        count = recv(sock, buffer.data(), buffer.size(), 0);
+        if (count == -1) {
+            const auto error{strerror(errno)};
+            throw runtime_error{"read error: " + string{error}};
+        }
+        data.insert(data.end(), buffer.begin(), buffer.begin() + count);
+    } while (count > 0);
+    return data;
 }
 
 }  // internal linkage
@@ -146,7 +218,32 @@ TcpPortFixture::TcpPortFixture() {
 }
 
 
-// Adapted from <https://beej.us/guide/bgnet/html/split-wide/system-calls-or-bust.html#system-calls-or-bust>.
+TcpClientFixture::TcpClientFixture(const string& host, in_port_t port):
+    addr{create_address(host, port)} {}
+
+
+vector<char> TcpClientFixture::send_data(const vector<char>& data) {
+    vector<char> response;
+    const auto sock{create_socket(addr.get())};
+    try {
+        connect_socket(sock, addr.get());
+        send_socket(sock, data);
+        // FIXME: TcpServerFixture never sends anything back
+        // response = read_socket(sock);
+    }
+    catch (...) {
+        shutdown(sock, SHUT_RDWR);
+        throw;
+    }
+    shutdown(sock, SHUT_RDWR);
+    return response;
+}
+
+
+string TcpClientFixture::send_text(const string& text) {
+    const auto response{send_data({text.begin(), text.end()})};
+    return {response.begin(), response.end()};
+}
 
 
 TcpServerFixture::TcpServerFixture(in_port_t port):
@@ -166,10 +263,7 @@ in_port_t TcpServerFixture::port() const {
 int TcpServerFixture::client() const {
     auto port_addr{create_address(port_)};
     auto sock{create_socket(port_addr.get())};
-    if (connect(sock, port_addr->ai_addr, port_addr->ai_addrlen) == -1) {
-        const auto error{strerror(errno)};
-        throw runtime_error{"connect error: " + string{error}};
-    }
+    connect_socket(sock, port_addr.get());
     return sock;
 }
 
@@ -268,10 +362,6 @@ void TcpServerFixture::read(int sock) {
     // There is no way to match this side of the connection (`sock`) to the
     // caller's side, e.g. the return value of `client()`. Therefore, there is
     // no point in maintaining a separate buffer for each client connection.
-    vector<char> buffer(256);
-    ssize_t count;
-    do {
-        count = recv(sock, buffer.data(), buffer.size(), 0);
-        bytes.insert(bytes.end(), buffer.begin(), buffer.begin() + count);
-    } while (count > 0);
+    const auto data{read_socket(sock)};
+    bytes.insert(bytes.end(), data.begin(), data.end());
 }

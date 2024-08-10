@@ -11,9 +11,11 @@
 #include <chrono>
 #include <vector>
 
+
 using namespace testing::fixture;
 using testing::Test;
 using std::chrono::duration;
+using std::string;
 using std::this_thread::sleep_for;
 using std::vector;
 
@@ -66,6 +68,49 @@ TEST_F(TcpPortFixtureTest, shared) {
 
 
 /**
+ * Test suite for the TcpClientFixture class
+ */
+class TcpClientFixtureTest: public Test {
+protected:
+    /**
+     * Per-test setup.
+     */
+    TcpClientFixtureTest() {
+        server.start();
+    }
+
+    TcpServerFixture server;
+};
+
+
+/**
+ * Test the TcpClientFixture::test_data() method.
+ */
+TEST_F(TcpClientFixtureTest, send_data) {
+    // This also tests the host constructor.
+    static const vector<char> data{'T', 'E', 'S', 'T'};
+    TcpClientFixture client{"localhost", server.port()};
+    EXPECT_EQ(vector<char>{}, client.send_data(data));
+    static const duration<float> delay{0.5};  // seconds
+    sleep_for(delay);  // wait for server
+    EXPECT_EQ(server.data(), data);
+}
+
+
+/**
+ * Test TcpClientFixture communication via socket
+ */
+TEST_F(TcpClientFixtureTest, send_text) {
+    static const string text{"TEST"};
+    TcpClientFixture client{"localhost", server.port()};
+    EXPECT_EQ("", client.send_text(text));
+    static const duration<float> delay{0.5};  // seconds
+    sleep_for(delay);  // wait for server
+    EXPECT_EQ(server.text(), text);
+}
+
+
+/**
  * Test suite for the TcpServerFixture class.
  */
 class TcpServerFixtureTest: public Test {
@@ -110,5 +155,5 @@ TEST_F(TcpServerFixtureTest, comm) {
  */
 TEST_F(TcpServerFixtureTest, shared) {
     Shared<TcpServerFixture> fixture;
-    EXPECT_EQ(fixture->port(), 0);
+    EXPECT_EQ(fixture->port(), 0);  // not started
 }

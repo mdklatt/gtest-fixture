@@ -64,12 +64,44 @@ private:
 
 
 /**
+ *
+ */
+class TcpClientFixture {
+public:
+    /**
+     * Construct a new instance from a target address.
+     *
+     * @param host target hostname
+     * @param port target port
+     */
+    TcpClientFixture(const std::string& host, in_port_t port);
+
+    /**
+     *
+     * @param data
+     * @return
+     */
+    std::vector<char> send_data(const std::vector<char>& data);
+
+    /**
+     *
+     * @param text
+     * @return
+     */
+    std::string send_text(const std::string& text);
+
+private:
+    const std::unique_ptr<addrinfo, void (*)(addrinfo*)> addr;
+};
+
+
+/**
  * Run a simple TCP server for testing client services.
  */
 class TcpServerFixture {
 public:
     /**
-     * Construct a new fixture instance.
+     * Construct a new instance.
      *
      * By default, the system will assign an available port number.
      *
