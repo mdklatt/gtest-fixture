@@ -8,13 +8,16 @@
 #include "gtest-fixture/shared.hpp"
 #include <gtest/gtest.h>
 #include <sys/socket.h>
+#include <algorithm>
 #include <chrono>
 #include <vector>
 
 
 using namespace testing::fixture;
+using namespace testing::fixture::network;
 using testing::Test;
 using std::chrono::duration;
+using std::reverse;
 using std::string;
 using std::this_thread::sleep_for;
 using std::vector;
@@ -79,7 +82,8 @@ protected:
         server.start();
     }
 
-    TcpServerFixture server;
+    TcpBufferHandler handler;
+    TcpServerFixture server{handler};
 };
 
 
@@ -93,7 +97,7 @@ TEST_F(TcpClientFixtureTest, send_data) {
     EXPECT_EQ(vector<char>{}, client.send_data(data));
     static const duration<float> delay{0.5};  // seconds
     sleep_for(delay);  // wait for server
-    EXPECT_EQ(server.data(), data);
+    EXPECT_EQ(handler.data(), data);
 }
 
 
@@ -106,7 +110,7 @@ TEST_F(TcpClientFixtureTest, send_text) {
     EXPECT_EQ("", client.send_text(text));
     static const duration<float> delay{0.5};  // seconds
     sleep_for(delay);  // wait for server
-    EXPECT_EQ(server.text(), text);
+    EXPECT_EQ(handler.text(), text);
 }
 
 
@@ -115,8 +119,8 @@ TEST_F(TcpClientFixtureTest, send_text) {
  */
 class TcpServerFixtureTest: public Test {
 protected:
-    vector<char> buffer;
-    TcpServerFixture fixture;
+    TcpEchoHandler handler;
+    TcpServerFixture fixture{handler};
 };
 
 
@@ -125,7 +129,7 @@ protected:
  */
 TEST_F(TcpServerFixtureTest, port) {
     static const auto port{8974};  // beware of existing usages
-    TcpServerFixture fixture{port};
+    TcpServerFixture fixture{handler, port};
     EXPECT_EQ(0, fixture.port());  // not running yet
     fixture.start();
     EXPECT_EQ(port, fixture.port());
@@ -139,14 +143,16 @@ TEST_F(TcpServerFixtureTest, comm) {
     fixture.start();
     EXPECT_NE(fixture.port(), 0);
     auto client{fixture.client()};  // caller must shutdown()
-    const vector<char> bytes{'T', 'E', 'S', 'T'};
-    send(client, bytes.data(), bytes.size(), 0);
-    static const duration<float> delay{1};  // seconds
+    const vector<char> request{'A', 'B', 'C'};
+    send(client, request.data(), request.size(), 0);
+    vector<char> buffer(256);
+    static const duration<float> delay{0.5};  // seconds
     sleep_for(delay);  // wait for polling thread to complete
+    auto count{recv(client, buffer.data(), buffer.size(), 0)};
+    const Bytes response{buffer.data(), buffer.data() + count};
+    EXPECT_EQ(response, request);
     shutdown(client, SHUT_RDWR);
     fixture.stop();
-    EXPECT_EQ(bytes, fixture.data());
-    EXPECT_EQ("TEST", fixture.text());
 }
 
 
@@ -154,6 +160,102 @@ TEST_F(TcpServerFixtureTest, comm) {
  * Test TcpPortFixture with the Shared<> adaptor.
  */
 TEST_F(TcpServerFixtureTest, shared) {
-    Shared<TcpServerFixture> fixture;
+    Shared<TcpServerFixture> fixture{handler};
     EXPECT_EQ(fixture->port(), 0);  // not started
+}
+
+
+/**
+ * Test suite for the TcpBufferHandler class.
+ */
+class TcpBufferHandlerTest: public Test {
+protected:
+    /**
+     * Per-test setup.
+     */
+    TcpBufferHandlerTest() {
+        // Test data concatenation.
+        handler.receive(0, {'A', 'B', 'C'});
+        handler.receive(1, {'D', 'E', 'F'});
+    }
+
+    TcpBufferHandler handler;
+};
+
+
+/**
+ * Test the TcpBufferHandler::response() method.
+ */
+TEST_F(TcpBufferHandlerTest, response) {
+    // Socket ID should not matter.
+    ASSERT_FALSE(handler.response(-1));
+}
+
+
+/**
+ * Test the TcpBufferHandler::clear() method.
+ */
+TEST_F(TcpBufferHandlerTest, clear) {
+    handler.clear();
+    ASSERT_EQ(handler.data(), Bytes{});
+}
+
+
+/**
+ * Test the TcpBufferHandler::data() method.
+ */
+TEST_F(TcpBufferHandlerTest, data) {
+    ASSERT_EQ(handler.data(), Bytes({'A', 'B', 'C', 'D', 'E', 'F'}));
+}
+
+
+/**
+ * Test the TcpBufferHandler::text() method.
+ */
+TEST_F(TcpBufferHandlerTest, text) {
+    ASSERT_EQ(handler.text(), "ABCDEF");
+}
+
+
+/**
+ * Test suite for the TcpEchoHandler class.
+ */
+class TcpEchoHandlerTest: public Test {
+protected:
+    /**
+     * Per-test setup.
+     */
+    TcpEchoHandlerTest():
+        data{{'A', 'B', 'C'}, {{'D', 'E', 'F'}}} {
+        int sock{0};
+        for (const auto& item: data) {
+            handler.receive(sock++, item);
+        }
+    }
+
+    const vector<Bytes> data;
+    TcpEchoHandler handler;
+};
+
+
+/**
+ * Test the TcpEchoHandler::response() method.
+ */
+TEST_F(TcpEchoHandlerTest, response) {
+    int sock{0};
+    for (const auto& item: data) {
+        ASSERT_EQ(handler.response(sock++), item);
+    }
+}
+
+
+/**
+ * Test the TcpEchoHandler::clear() method.
+ */
+TEST_F(TcpEchoHandlerTest, clear) {
+    handler.clear();
+    int sock{0};
+    for (const auto& item: data) {
+        ASSERT_FALSE(handler.response(sock++));
+    }
 }

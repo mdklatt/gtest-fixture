@@ -7,11 +7,14 @@
 #include <atomic>
 #include <functional>
 #include <future>
+#include <map>
 #include <vector>
 #include <netdb.h>
 
 
-namespace testing::fixture {
+namespace testing::fixture::network {
+
+using Bytes = std::vector<char>;
 
 /**
  * Find an available TCP port on localhost.
@@ -64,7 +67,7 @@ private:
 
 
 /**
- *
+ * Communicate with a TCP server under test.
  */
 class TcpClientFixture {
 public:
@@ -77,16 +80,18 @@ public:
     TcpClientFixture(const std::string& host, in_port_t port);
 
     /**
+     * Send data to the server.
      *
-     * @param data
-     * @return
+     * @param data bytes to send
+     * @return bytes returned by the server
      */
-    std::vector<char> send_data(const std::vector<char>& data);
+    Bytes send_data(const Bytes& data);
 
     /**
+     * Send text to the server.
      *
-     * @param text
-     * @return
+     * @param text text to send
+     * @return text returned by the server
      */
     std::string send_text(const std::string& text);
 
@@ -96,7 +101,123 @@ private:
 
 
 /**
- * Run a simple TCP server for testing client services.
+ * Interface for handling incoming requests to TcpServerFixture.
+ */
+class TcpClientHandler {
+public:
+    /**
+     * Receive data from a client connection.
+     *
+     * The socket ID can used to track input from multiple connections. This
+     * is the socket for the server's connection to the client; there is no way
+     * to match this to the client's side of the connection.
+     *
+     * @param sock client connection socket ID
+     * @param data data received from client
+     * @return true if a complete request has been received
+     */
+    virtual bool receive(int sock, const Bytes& data) = 0;
+
+    /**
+     * Optionally return a response to a client connection.
+     *
+     * This is called when receive() returns true. This should be overloaded
+     * by derived classes to implement a specific protocol as necessary. The
+     * default implementation returns a null response that is ignored by
+     * TcpServerFixture.
+     *
+     * @param sock client connection socket ID
+     * @return client response
+     */
+    virtual std::optional<Bytes> response(int sock);
+
+protected:
+    /**
+     * Default constructor.
+     */
+    TcpClientHandler() = default;
+};
+
+
+/**
+ * Buffer input for inspection.
+ */
+class TcpBufferHandler: public TcpClientHandler {
+public:
+    /**
+     * Received data from a client connection.
+     *
+     * All data is placed into a single buffer regardless of which connection
+     * it was received from.
+     *
+     * @param sock client connection socket ID
+     * @param data data received from client
+     * @return true if a complete request has been received
+     */
+    bool receive(int sock, const Bytes& data) override;
+
+    /**
+     * Clear buffered data.
+     */
+    void clear();
+
+    /**
+     * Return all data received.
+     *
+     * @return data
+     */
+    const Bytes& data() const;
+
+    /**
+     * Return all data received as a string.
+     *
+     * @return text
+     */
+    std::string text() const;
+
+private:
+    Bytes buffer;
+};
+
+
+/**
+ * Echo input on a client connection.
+ */
+class TcpEchoHandler: public TcpClientHandler {
+public:
+    /**
+     * Clear buffered data.
+     */
+    void clear();
+
+public:  // TcpClientHandler interface
+    /**
+     * Receive input from a client connection.
+     *
+     * @param sock client connection socket ID
+     * @param data data received from client
+     * @return true if a complete request has been received
+     */
+    bool receive(int sock, const Bytes& data) override;
+
+    /**
+     * Echo all input received on a client connection.
+     *
+     * A null response that is ignored by TcpServerFixture is returned if there
+     * is no input for the given client connection.
+     *
+     * @param sock client connection socket ID
+     * @return data received from client
+     */
+    std::optional<Bytes> response(int sock) override;
+
+private:
+    std::map<int, Bytes> buffers;
+};
+
+
+/**
+ * Run a simple TCP server for clients under test.
  */
 class TcpServerFixture {
 public:
@@ -105,10 +226,9 @@ public:
      *
      * By default, the system will assign an available port number.
      *
-     * @param callback: callback to execute when data is received
      * @return listening port
      */
-    explicit TcpServerFixture(in_port_t port=0);
+    explicit TcpServerFixture(TcpClientHandler& handler, in_port_t port=0);
 
     /**
      * Destruct an instance.
@@ -136,30 +256,10 @@ public:
     in_port_t port() const;
 
     /**
-     * Return all data received at the listening port.
-     *
-     * Data buffers are every time the server is started.
-     *
-     * @param client socket descriptor
-     * @return bytes
-     */
-    const std::vector<char>& data() const;
-
-    /**
-     * Return all data received at the listening port as text.
-     *
-     * Data buffers are every time the server is started.
-     *
-     * @param client socket descriptor
-     * @return text
-     */
-    std::string text() const;
-
-    /**
      * Start the server asynchronously.
      *
      * This is nonblocking. The server will listen in a separate thread until
-     * stop() is called.
+     * stop() is called. This will reset all data received buffers.
      */
     void start();
 
@@ -172,12 +272,12 @@ public:
     TcpServerFixture(const TcpServerFixture&) = delete;
 
 private:
-    int socket{-1};
-    in_port_t port_{0};
+    TcpClientHandler* handler{nullptr};
+    int listen_sock{-1};
+    in_port_t listen_port{0};
     std::unique_ptr<addrinfo, void (*)(addrinfo*)> addr;
     std::future<void> serve;
     std::atomic<bool> stopped{true};
-    std::vector<char> bytes;
 
     /**
      * Accept a connection from a client.
@@ -198,8 +298,9 @@ private:
      * Read data from a socket and append it to its buffer.
      *
      * @param sock
+     * @return true if more data is available for read
      */
-    void read(int sock);
+    //bool read(int sock);
 };
 
 }  // testing::fixture

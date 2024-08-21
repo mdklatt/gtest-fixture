@@ -1,4 +1,5 @@
 #include "gtest-fixture/network.hpp"
+#include <cassert>
 #include <chrono>
 #include <future>
 #include <stdexcept>
@@ -15,15 +16,20 @@ using std::async;
 using std::future_status;
 using std::chrono::duration;
 using std::function;
+using std::optional;
 using std::runtime_error;
 using std::strerror;
 using std::string;
 using std::to_string;
 using std::unique_ptr;
 using std::vector;
-using testing::fixture::TcpPortFixture;
-using testing::fixture::TcpClientFixture;
-using testing::fixture::TcpServerFixture;
+using testing::fixture::network::Bytes;
+using testing::fixture::network::TcpPortFixture;
+using testing::fixture::network::TcpClientFixture;
+using testing::fixture::network::TcpServerFixture;
+using testing::fixture::network::TcpClientHandler;
+using testing::fixture::network::TcpBufferHandler;
+using testing::fixture::network::TcpEchoHandler;
 
 
 namespace {
@@ -138,29 +144,6 @@ void send_socket(int sock, vector<char> data) {
     }
 }
 
-
-/**
- * Read data over a socket.
- *
- * @param sock socket descriptor
- * @param buflen input buffer lenght
- * @return bytes
- */
-vector<char> read_socket(int sock) {
-    vector<char> buffer(1024);
-    vector<char> data;
-    ssize_t count;
-    do {
-        count = recv(sock, buffer.data(), buffer.size(), 0);
-        if (count == -1) {
-            const auto error{strerror(errno)};
-            throw runtime_error{"read error: " + string{error}};
-        }
-        data.insert(data.end(), buffer.begin(), buffer.begin() + count);
-    } while (count > 0);
-    return data;
-}
-
 }  // internal linkage
 
 
@@ -222,8 +205,8 @@ TcpClientFixture::TcpClientFixture(const string& host, in_port_t port):
     addr{create_address(host, port)} {}
 
 
-vector<char> TcpClientFixture::send_data(const vector<char>& data) {
-    vector<char> response;
+Bytes TcpClientFixture::send_data(const Bytes& data) {
+    Bytes response;
     const auto sock{create_socket(addr.get())};
     try {
         connect_socket(sock, addr.get());
@@ -246,7 +229,58 @@ string TcpClientFixture::send_text(const string& text) {
 }
 
 
-TcpServerFixture::TcpServerFixture(in_port_t port):
+optional<Bytes> TcpClientHandler::response(int sock) {
+    return {};
+}
+
+
+bool TcpBufferHandler::receive(int sock, const Bytes& data) {
+    buffer.insert(buffer.end(), data.begin(), data.end());
+    return true;
+}
+
+
+void testing::fixture::network::TcpBufferHandler::clear() {
+    buffer.clear();
+}
+
+
+const Bytes& TcpBufferHandler::data() const {
+    return buffer;
+}
+
+
+string TcpBufferHandler::text() const {
+    return {buffer.begin(), buffer.end()};
+}
+
+
+bool TcpEchoHandler::receive(int sock, const Bytes& data) {
+    auto& buffer{buffers[sock]};
+    buffer.insert(buffer.end(), data.begin(), data.end());
+    return true;
+}
+
+
+optional<Bytes> TcpEchoHandler::response(int sock) {
+    static const optional<Bytes> null;
+    const auto it{buffers.find(sock)};
+    if (it == buffers.end()) {
+        return null;
+    }
+    auto response{it->second};
+    buffers.erase(it);
+    return response;
+}
+
+
+void TcpEchoHandler::clear() {
+    buffers.clear();
+}
+
+
+TcpServerFixture::TcpServerFixture(TcpClientHandler& handler, in_port_t port):
+    handler{&handler},
     addr{create_address(port)} {}
 
 
@@ -256,25 +290,15 @@ TcpServerFixture::~TcpServerFixture() {
 
 
 in_port_t TcpServerFixture::port() const {
-    return port_;
+    return listen_port;
 }
 
 
 int TcpServerFixture::client() const {
-    auto port_addr{create_address(port_)};
+    auto port_addr{create_address(listen_port)};
     auto sock{create_socket(port_addr.get())};
     connect_socket(sock, port_addr.get());
     return sock;
-}
-
-
-const vector<char>& TcpServerFixture::data() const {
-    return bytes;
-}
-
-
-string TcpServerFixture::text() const {
-    return {bytes.begin(), bytes.end()};
 }
 
 
@@ -283,10 +307,9 @@ void TcpServerFixture::start() {
         return;
     }
     static const duration<float> delay{0.5};  // seconds
-    bytes.clear();
-    socket = create_socket(addr.get());
-    port_ = bind_socket(socket, addr.get());
-    listen(socket, 0);  // only one concurrent connection allowed
+    listen_sock = create_socket(addr.get());
+    listen_port = bind_socket(listen_sock, addr.get());
+    listen(listen_sock, 0);  // only one concurrent connection allowed
     std::this_thread::sleep_for(delay);  // wait for socket to start listening
     stopped = false;
     serve = async([this]() {
@@ -301,17 +324,17 @@ void TcpServerFixture::stop() {
     }
     stopped = true;  // poll() will exit after its current loop
     serve.wait();
-    if (socket != -1) {
-        shutdown(socket, SHUT_RDWR);
-        socket = -1;
+    if (listen_sock != -1) {
+        shutdown(listen_sock, SHUT_RDWR);
+        listen_sock = -1;
     }
-    port_ = 0;
+    listen_port = 0;
 }
 
 
 void TcpServerFixture::poll() {
     pollfd listener{};
-    listener.fd = socket;
+    listener.fd = listen_sock;
     listener.events = POLLIN;
     vector<pollfd> sockets{listener};
     while (not stopped) {
@@ -323,22 +346,41 @@ void TcpServerFixture::poll() {
         }
         const auto socket_count{sockets.size()};  // vector is modified during iteration
         for (auto item{0}; item < socket_count; ++item) {
-            const auto& sock{sockets[item]};
+            auto& sock{sockets[item]};
             if (sock.revents & POLLIN) {
                 // New input is available.
-                if (sock.fd == socket) {
+                if (sock.fd == listen_sock) {
                     // A new client is connected. It's okay to modify the
                     // container here because the original size is used for
                     // iteration. The new client will be polled during the next
                     // cycle.
                     pollfd client{};
-                    client.fd = accept(socket);
+                    client.fd = accept(listen_sock);
                     client.events = POLLIN;
                     sockets.emplace_back(client);
                 }
                 else {
                     // Get data from a connected client.
-                    read(sock.fd);
+                    assert(handler);
+                    static vector<char> buffer(256);
+                    ssize_t count;
+                    bool eof{false};
+                    do {
+                        // If the input received is exactly equal to the buffer size, this will
+                        // try again, at which point recv() blocks because there is
+                        // no more input.
+                        count = recv(sock.fd, buffer.data(), buffer.size(), 0);
+                        if (count == -1) {
+                            const auto error{strerror(errno)};
+                            throw runtime_error{"read error: " + string{error}};
+                        }
+                        eof = handler->receive(sock.fd, {buffer.begin(), buffer.begin() + count});
+                    }
+                    while (not eof);
+                    const auto response{handler->response(sock.fd)};
+                    if (response) {
+                        send_socket(sock.fd, response.value());
+                    }
                 }
             }
         }
@@ -355,13 +397,4 @@ int TcpServerFixture::accept(int sock) {
         throw runtime_error{"client accept error: " + string{error}};
     }
     return client_sock;
-}
-
-
-void TcpServerFixture::read(int sock) {
-    // There is no way to match this side of the connection (`sock`) to the
-    // caller's side, e.g. the return value of `client()`. Therefore, there is
-    // no point in maintaining a separate buffer for each client connection.
-    const auto data{read_socket(sock)};
-    bytes.insert(bytes.end(), data.begin(), data.end());
 }
