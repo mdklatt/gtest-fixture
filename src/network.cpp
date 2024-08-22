@@ -1,5 +1,6 @@
 #include "gtest-fixture/network.hpp"
 #include <cassert>
+#include <cstring>
 #include <chrono>
 #include <future>
 #include <stdexcept>

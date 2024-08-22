@@ -8,6 +8,7 @@
 #include <functional>
 #include <future>
 #include <map>
+#include <optional>
 #include <vector>
 #include <netdb.h>
 
