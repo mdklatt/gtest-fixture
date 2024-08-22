@@ -11,7 +11,7 @@
 #include <memory>
 #include <sstream>
 
-using namespace testing::fixture;
+using namespace testing::fixture::stream;
 using testing::fixture::shared::Shared;
 using testing::Test;
 using std::istringstream;

@@ -12,7 +12,7 @@
 #include <vector>
 
 
-namespace testing::fixture {
+namespace testing::fixture::stream {
 
 /**
  * Replace the contents of an input stream.

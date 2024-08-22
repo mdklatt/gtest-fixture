@@ -2,6 +2,7 @@
 #include <fstream>
 #include <stdexcept>
 
+using namespace testing::fixture::stream;
 using std::invalid_argument;
 using std::istream;
 using std::make_unique;
@@ -9,9 +10,6 @@ using std::ofstream;
 using std::ostream;
 using std::streambuf;
 using std::string;
-using testing::fixture::InputFixture;
-using testing::fixture::OutputFixture;
-using testing::fixture::TeeBuffer;
 
 
 InputFixture::InputFixture(istream& stream, std::istream& input):
