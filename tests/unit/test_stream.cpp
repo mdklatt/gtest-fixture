@@ -12,6 +12,7 @@
 #include <sstream>
 
 using namespace testing::fixture;
+using testing::fixture::shared::Shared;
 using testing::Test;
 using std::istringstream;
 using std::ostringstream;

@@ -10,7 +10,7 @@
 #include <cstdlib>
 #include <stdexcept>
 
-using namespace testing::fixture;
+using namespace testing::fixture::shared;
 using testing::fixture::environ::EnvironFixture;
 using testing::Test;
 using std::getenv;

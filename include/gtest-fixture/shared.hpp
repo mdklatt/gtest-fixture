@@ -10,7 +10,7 @@
 #include <stdexcept>
 
 
-namespace testing::fixture {
+namespace testing::fixture::shared {
     /**
      * Adaptor for sharing a fixture across multiple tests.
      *
