@@ -8,7 +8,7 @@
 #include <gtest/gtest.h>
 #include <string>
 
-using namespace testing::fixture;
+using namespace testing::fixture::tmpdir;
 using testing::Test;
 using std::filesystem::is_directory;
 using std::filesystem::relative;

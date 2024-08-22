@@ -10,7 +10,7 @@
 #include <map>
 
 
-namespace testing::fixture {
+namespace testing::fixture::tmpdir {
 
 /**
  * Fixture for managing temporary directories.
