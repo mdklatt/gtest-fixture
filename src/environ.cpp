@@ -4,7 +4,7 @@
 #include <stdexcept>
 
 
-using testing::fixture::EnvironFixture;
+using namespace testing::fixture::environ;
 using std::string;
 using std::snprintf;
 using std::invalid_argument;
@@ -60,7 +60,7 @@ char* EnvironFixture::str(const std::string &name, const std::string& value) {
 }
 
 
-void testing::fixture::EnvironFixture::save(const std::string &name) {
+void EnvironFixture::save(const std::string &name) {
     if (local.find(name) != local.end()) {
         // Don't save variable that has already been modified.
         return;

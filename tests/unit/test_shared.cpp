@@ -11,6 +11,7 @@
 #include <stdexcept>
 
 using namespace testing::fixture;
+using testing::fixture::environ::EnvironFixture;
 using testing::Test;
 using std::getenv;
 using std::make_unique;

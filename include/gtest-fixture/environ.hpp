@@ -11,7 +11,7 @@
 #include <string>
 
 
-namespace testing::fixture {
+namespace testing::fixture::environ {
     /**
      * Test fixture for managing environment variables.
      */
