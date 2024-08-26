@@ -15,7 +15,11 @@
 
 namespace testing::fixture::network {
 
+
 using Bytes = std::vector<char>;
+
+
+extern float SOCKET_TIMEOUT;  // seconds
 
 /**
  * Find an available TCP port on localhost.
@@ -84,7 +88,7 @@ public:
      * Send data to the server.
      *
      * @param data bytes to send
-     * @return bytes returned by the server
+     * @return data returned to server
      */
     Bytes send_data(const Bytes& data);
 
@@ -92,7 +96,7 @@ public:
      * Send text to the server.
      *
      * @param text text to send
-     * @return text returned by the server
+     * @return text returned from server
      */
     std::string send_text(const std::string& text);
 

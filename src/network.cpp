@@ -1,5 +1,6 @@
 #include "gtest-fixture/network.hpp"
 #include <cassert>
+#include <cmath>
 #include <cstring>
 #include <chrono>
 #include <future>
@@ -10,10 +11,12 @@
 #include <netdb.h>
 #include <poll.h>  // *nix only
 #include <sys/socket.h>
+#include <sys/time.h>
 #include <sys/types.h>
 
 
 using std::async;
+using std::modf;
 using std::future_status;
 using std::chrono::duration;
 using std::function;
@@ -24,6 +27,7 @@ using std::string;
 using std::to_string;
 using std::unique_ptr;
 using std::vector;
+using testing::fixture::network::SOCKET_TIMEOUT;
 using testing::fixture::network::Bytes;
 using testing::fixture::network::TcpPortFixture;
 using testing::fixture::network::TcpClientFixture;
@@ -83,7 +87,14 @@ int create_socket(const addrinfo* addr) {
         const auto error{strerror(errno)};
         throw runtime_error{"socket error: " + string{error}};
     }
-    static const int reuse{1};  // reuse port
+    float sec;
+    const float usec{1e6f * modf(SOCKET_TIMEOUT, &sec)};
+    timeval timeout{};
+    timeout.tv_sec = static_cast<int>(sec);
+    timeout.tv_usec = static_cast<int>(usec);
+    setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
+    setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(timeout));
+    static const int reuse{1};
     setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse));
     return sock;
 }
@@ -128,12 +139,12 @@ int bind_socket(int sock, const addrinfo* addr) {
 
 
 /**
- * Send data over a socket.
+ * Send data over a connected socket.
  *
  * @param sock socket descriptor
  * @param data bytes to send
  */
-void send_socket(int sock, vector<char> data) {
+void send_socket(int sock, Bytes data) {
     while (data.size() > 0) {
         // Continue until all data has been sent.
         const auto count{send(sock, data.data(), data.size(), 0)};
@@ -145,7 +156,42 @@ void send_socket(int sock, vector<char> data) {
     }
 }
 
+
+/**
+ * Read data over a connected socket.
+ *
+ * @param sock
+ * @return data received from socket
+ */
+Bytes read_socket(int sock) {
+    static vector<char> buffer(3);
+    Bytes response;
+    ssize_t count;
+    do {
+        // Request more data as long as the read buffer was filled. If the
+        // number of bytes being sent is an exact multiple of buffer.size(),
+        // there will be 0 bytes to read on the last iteration, which will
+        // cause recv() to time out.
+        count = ::recv(sock, buffer.data(), buffer.size(), 0);
+        if (count == -1) {
+            if (errno == EWOULDBLOCK or errno == EAGAIN) {
+                // One reason for this is a recv() timeout. In any case, return
+                // all the data received so far.
+                break;
+            }
+            const auto error{strerror(errno)};
+            throw runtime_error{"read error: " + string{error}};
+        }
+        response.insert(response.end(), buffer.begin(), buffer.begin() + count);
+    }
+    while (count == buffer.size());
+    return response;
+}
+
 }  // internal linkage
+
+
+float testing::fixture::network::SOCKET_TIMEOUT = 1;
 
 
 const unique_ptr<addrinfo, void (*)(addrinfo*)> TcpPortFixture::addr{create_address()};
@@ -212,8 +258,7 @@ Bytes TcpClientFixture::send_data(const Bytes& data) {
     try {
         connect_socket(sock, addr.get());
         send_socket(sock, data);
-        // FIXME: TcpServerFixture never sends anything back
-        // response = read_socket(sock);
+        response = read_socket(sock);
     }
     catch (...) {
         shutdown(sock, SHUT_RDWR);
@@ -225,7 +270,8 @@ Bytes TcpClientFixture::send_data(const Bytes& data) {
 
 
 string TcpClientFixture::send_text(const string& text) {
-    const auto response{send_data({text.begin(), text.end()})};
+    const Bytes data{text.begin(), text.end()};
+    const auto response{send_data(data)};
     return {response.begin(), response.end()};
 }
 
@@ -367,9 +413,6 @@ void TcpServerFixture::poll() {
                     ssize_t count;
                     bool eof{false};
                     do {
-                        // If the input received is exactly equal to the buffer size, this will
-                        // try again, at which point recv() blocks because there is
-                        // no more input.
                         count = recv(sock.fd, buffer.data(), buffer.size(), 0);
                         if (count == -1) {
                             const auto error{strerror(errno)};

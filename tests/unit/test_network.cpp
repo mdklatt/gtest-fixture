@@ -83,7 +83,7 @@ protected:
         server.start();
     }
 
-    TcpBufferHandler handler;
+    TcpEchoHandler handler;
     TcpServerFixture server{handler};
 };
 
@@ -93,12 +93,9 @@ protected:
  */
 TEST_F(TcpClientFixtureTest, send_data) {
     // This also tests the host constructor.
-    static const vector<char> data{'T', 'E', 'S', 'T'};
+    static const vector<char> data{'A', 'B', 'C'};
     TcpClientFixture client{"localhost", server.port()};
-    EXPECT_EQ(vector<char>{}, client.send_data(data));
-    static const duration<float> delay{0.5};  // seconds
-    sleep_for(delay);  // wait for server
-    EXPECT_EQ(handler.data(), data);
+    EXPECT_EQ(data, client.send_data(data));
 }
 
 
@@ -106,12 +103,9 @@ TEST_F(TcpClientFixtureTest, send_data) {
  * Test TcpClientFixture communication via socket
  */
 TEST_F(TcpClientFixtureTest, send_text) {
-    static const string text{"TEST"};
+    static const string text{"ABC"};
     TcpClientFixture client{"localhost", server.port()};
-    EXPECT_EQ("", client.send_text(text));
-    static const duration<float> delay{0.5};  // seconds
-    sleep_for(delay);  // wait for server
-    EXPECT_EQ(handler.text(), text);
+    EXPECT_EQ("ABC", client.send_text(text));
 }
 
 
