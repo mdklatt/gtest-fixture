@@ -113,23 +113,28 @@ public:
     /**
      * Receive data from a client connection.
      *
+     * This is called every time a new chunk of data is received from the
+     * client. It should not be assumed that each chunk of data represents a
+     * complete request. It is the derived class's responsibility to buffer
+     * input and assemble it into complete requests.
+     *
      * The socket ID can used to track input from multiple connections. This
      * is the socket for the server's connection to the client; there is no way
      * to match this to the client's side of the connection.
      *
      * @param sock client connection socket ID
      * @param data data received from client
-     * @return true if a complete request has been received
      */
-    virtual bool receive(int sock, const Bytes& data) = 0;
+    virtual void receive(int sock, const Bytes& data) = 0;
 
     /**
      * Optionally return a response to a client connection.
      *
-     * This is called when receive() returns true. This should be overloaded
-     * by derived classes to implement a specific protocol as necessary. The
-     * default implementation returns a null response that is ignored by
-     * TcpServerFixture.
+     * This is called once the client connection reports EOF, but this does not
+     * guarantee that a complete request has been received. It is the derived
+     * class's responsibility to buffer input and generate a response when
+     * appropriate. The default  implementation returns a null response that is
+     * ignored by TcpServerFixture.
      *
      * @param sock client connection socket ID
      * @return client response
@@ -157,9 +162,8 @@ public:
      *
      * @param sock client connection socket ID
      * @param data data received from client
-     * @return true if a complete request has been received
      */
-    bool receive(int sock, const Bytes& data) override;
+    void receive(int sock, const Bytes& data) override;
 
     /**
      * Clear buffered data.
@@ -201,9 +205,8 @@ public:  // TcpClientHandler interface
      *
      * @param sock client connection socket ID
      * @param data data received from client
-     * @return true if a complete request has been received
      */
-    bool receive(int sock, const Bytes& data) override;
+    void receive(int sock, const Bytes& data) override;
 
     /**
      * Echo all input received on a client connection.

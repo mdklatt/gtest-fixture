@@ -138,13 +138,14 @@ TEST_F(TcpServerFixtureTest, comm) {
     fixture.start();
     EXPECT_NE(fixture.port(), 0);
     auto client{fixture.client()};  // caller must shutdown()
-    const vector<char> request{'A', 'B', 'C'};
+    const Bytes request{'A', 'B', 'C'};
     send(client, request.data(), request.size(), 0);
     vector<char> buffer(256);
     static const duration<float> delay{0.5};  // seconds
     sleep_for(delay);  // wait for polling thread to complete
     auto count{recv(client, buffer.data(), buffer.size(), 0)};
-    const Bytes response{buffer.data(), buffer.data() + count};
+    const Bytes data{buffer.data(), buffer.data() + count};
+    const Bytes response{data};
     EXPECT_EQ(response, request);
     shutdown(client, SHUT_RDWR);
     fixture.stop();

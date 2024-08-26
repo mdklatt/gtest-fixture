@@ -281,9 +281,8 @@ optional<Bytes> TcpClientHandler::response(int sock) {
 }
 
 
-bool TcpBufferHandler::receive(int sock, const Bytes& data) {
+void TcpBufferHandler::receive(int sock, const Bytes& data) {
     buffer.insert(buffer.end(), data.begin(), data.end());
-    return true;
 }
 
 
@@ -302,10 +301,9 @@ string TcpBufferHandler::text() const {
 }
 
 
-bool TcpEchoHandler::receive(int sock, const Bytes& data) {
+void TcpEchoHandler::receive(int sock, const Bytes& data) {
     auto& buffer{buffers[sock]};
     buffer.insert(buffer.end(), data.begin(), data.end());
-    return true;
 }
 
 
@@ -407,20 +405,17 @@ void TcpServerFixture::poll() {
                     sockets.emplace_back(client);
                 }
                 else {
-                    // Get data from a connected client.
+                    // Get data from a connected client. If the size of the
+                    // sent data is greater than buffer.size(), the remaining
+                    // data will be available on the next iteration.
                     assert(handler);
-                    static vector<char> buffer(256);
-                    ssize_t count;
-                    bool eof{false};
-                    do {
-                        count = recv(sock.fd, buffer.data(), buffer.size(), 0);
-                        if (count == -1) {
-                            const auto error{strerror(errno)};
-                            throw runtime_error{"read error: " + string{error}};
-                        }
-                        eof = handler->receive(sock.fd, {buffer.begin(), buffer.begin() + count});
+                    static Bytes buffer(1024);
+                    const auto count{recv(sock.fd, buffer.data(), buffer.size(), 0)};
+                    if (count == -1) {
+                        const auto error{strerror(errno)};
+                        throw runtime_error{"read error: " + string{error}};
                     }
-                    while (not eof);
+                    handler->receive(sock.fd, {buffer.begin(), buffer.begin() + count});
                     const auto response{handler->response(sock.fd)};
                     if (response) {
                         send_socket(sock.fd, response.value());
