@@ -11,10 +11,10 @@ build/
 # Ignore Python environments.
 
 .python-version
-.venv*/
+venv*/
 
 
-# Ignore Conan artifacts.
+# Ignore CMake user files.
 
 CMakeUserPresets.json
 
