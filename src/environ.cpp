@@ -45,7 +45,7 @@ void EnvironFixture::set(const std::string& name, const std::string& value) {
 }
 
 
-void EnvironFixture::unset(const std::string &name) {
+void EnvironFixture::unset(const std::string& name) {
     save(name);
     local[name] = nullptr;
     unsetenv(name.c_str());

@@ -100,7 +100,7 @@ private:
     std::ostream& stream;
 };
 
-}  // testing::fixture
+}  // testing::fixture::stream
 
 
 #endif  // GTEST_FIXTURE_STREAM_HPP

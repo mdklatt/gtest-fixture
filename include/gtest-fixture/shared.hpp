@@ -60,6 +60,6 @@ namespace testing::fixture::shared {
     private:
         std::unique_ptr<Fixture> fixture;
     };
-}
+}  // testing::fixture::shared
 
 #endif  // GTEST_FIXTURE_SHARED_HPP

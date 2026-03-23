@@ -311,7 +311,7 @@ private:
     //bool read(int sock);
 };
 
-}  // testing::fixture
+}  // testing::fixture::network
 
 
 #endif  // GTEST_FIXTURE_NETWORK_HPP

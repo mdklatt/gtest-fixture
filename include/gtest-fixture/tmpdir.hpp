@@ -82,7 +82,7 @@ private:
     static std::map<size_t, std::filesystem::path> list_dirs();
 };
 
-}  // namespace
+}  // testing::fixture::tmpdir
 
 
 #endif  // GTEST_FIXTURE_TMPDIR_HPP
