@@ -6,39 +6,9 @@ external build tree or an installed library.
 """
 import pytest
 from pathlib import Path
-from subprocess import Popen, PIPE, run, STDOUT
-from sys import stdout
+from subprocess import PIPE, run, STDOUT
 from shlex import split
-
-
-def _build(source: Path, build: Path, defs: dict, target=None):
-    """ Build a CMake project.
-
-    :param source: source directory
-    :param build: build directory
-    :param defs: CMake definitions
-    :param target: target name
-    """
-    def cmake(*args):
-        """ Execute `cmake` command. """
-        argv = ["cmake"] + list(map(str, args))
-        process = Popen(argv, stdout=PIPE, stderr=STDOUT)
-        for line in iter(process.stdout.readline, b""):
-            # Echo command's stdout and stderr to terminal.
-            stdout.write(line.decode())
-        process.wait()
-        if process.returncode != 0:
-            raise RuntimeError(f"cmake failed: {process.returncode}")
-        return process.returncode
-
-    config_args = [f"-D{key}={value}" for key, value in defs.items()]
-    config_args.extend(("-S", source, "-B", build))
-    cmake(*config_args)
-    build_args = ["--build", build]
-    if target:
-        build_args.extend(("--target", target))
-    cmake(*build_args)
-    return
+from typing import Callable
 
 
 @pytest.fixture
@@ -50,8 +20,71 @@ def build_dir(tmp_path) -> Path:
     return tmp_path / "build"
 
 
+@pytest.fixture(params=["Debug", "Release"], scope="module")
+def build_type(request) -> str:
+    """ CMake build type.
+
+    :return: build type name
+    """
+    return request.param
+
+
+@pytest.fixture(scope="module")
+def conan(tmp_path_factory, build_type):
+    """ Install dependencies with Conan.
+
+    :return: path to Conan toolchain file
+    """
+    root = tmp_path_factory.mktemp("conan")
+    conanfile = "tests/integration/conanfile.py"
+    argv = ["conan", "install", conanfile, f"--output-folder={root}", "-s", f"build_type={build_type}"]
+    process = run(argv, stdout=PIPE, stderr=STDOUT, text=True)
+    output = process.stdout.split("\n")  # debugging
+    if process.returncode != 0:
+        raise RuntimeError(f"conan failed: {process.returncode}")
+    toolchain = root.joinpath("build", build_type, "generators", "conan_toolchain.cmake")
+    try:
+        yield toolchain
+    finally:
+        presets = Path("tests", "integration", "CMakeUserPresets.json")
+        presets.unlink()
+    return
+
+
 @pytest.fixture
-def install(tmp_path, build_dir) -> dict:
+def build(build_type, conan) -> Callable:
+    """ Build a CMake project.
+
+    """
+    def run_cmake(*args):
+        """ Execute `cmake` command. """
+        argv = ["cmake"] + list(map(str, args))
+        process = run(argv, stdout=PIPE, stderr=STDOUT, text=True)
+        output = process.stdout.split("\n")  # debugging
+        if process.returncode != 0:
+            raise RuntimeError(f"cmake failed: {process.returncode}")
+        return process.returncode
+
+    def run_build(source: Path, build: Path, defs: dict, target=None):
+        """ """
+        default_defs = {
+            "CMAKE_BUILD_TYPE": build_type,
+            "CMAKE_TOOLCHAIN_FILE": conan,
+        }
+        defs = default_defs | defs
+        config_args = [f"-D{key}={value}" for key, value in defs.items()]
+        config_args.extend(["-S", source, "-B", build])
+        run_cmake(*config_args)
+        build_args = ["--build", build]
+        if target:
+            build_args.extend(["--target", target])
+        run_cmake(*build_args)
+
+    return run_build
+
+
+@pytest.fixture
+def install(tmp_path, conan, build, build_dir) -> dict:
     """ Configure the build to use an installed library.
 
     :return: CMake definitions
@@ -63,32 +96,32 @@ def install(tmp_path, build_dir) -> dict:
         "CMAKE_PREFIX_PATH": install_dir,
         "CMAKE_INSTALL_PREFIX": install_dir,
     }
-    _build(source_dir, build_dir / "lib", defs, "install")
+    build(source_dir, build_dir / "lib", defs, "install")
     return defs
 
 
 @pytest.fixture
-def source() -> dict:
+def source(conan) -> dict:
     """ Configure the build to the library source tree.
 
     :return: CMake definitions
     """
     return {
         "BUILD_TESTING": "OFF",
+        "CMAKE_TOOLCHAIN_FILE": conan,
         "LIBRARY_SOURCE_DIR": Path.cwd(),
     }
 
 
-@pytest.fixture(params=("install", "source"))
-def app(request, build_dir) -> Path:
+@pytest.fixture(params=["install", "source"])
+def app(request, conan, build, build_dir) -> Path:
     """ Build the C++ test application.
 
     :return: application path
     """
     defs = request.getfixturevalue(request.param)
-    defs |= {"CMAKE_BUILD_TYPE": "Release"}
     local_dir = Path(__file__).parent / "src"
-    _build(local_dir, build_dir, defs)
+    build(local_dir, build_dir, defs)
     return build_dir / "test_lib"
 
 
