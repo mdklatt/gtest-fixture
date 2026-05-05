@@ -14,6 +14,13 @@ class GTestFixtureRecipe(ConanFile):
 
     generators = "CMakeToolchain", "CMakeDeps"
 
+    options = {
+        "build_tests": [True, False],
+    }
+    default_options = {
+        "build_tests": False
+    }
+
 
     exports_sources = (
         "CMakeLists.txt",
@@ -27,11 +34,11 @@ class GTestFixtureRecipe(ConanFile):
 
     def build(self):
         cmake = CMake(self)
-
         cmake.configure(variables={
-            "BUILD_TESTING": False
+            "BUILD_TESTING": self.options.build_tests
         })
         cmake.build()
+        return
 
     def package(self):
         cmake = CMake(self)
