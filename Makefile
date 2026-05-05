@@ -36,6 +36,12 @@ test: build
 	cd build/debug/conan && ctest --output-on-failure
 
 
+.PHONY: test-package
+test-package:
+	. $(VENV)/bin/activate
+	conan test gtest-fixture/0.1.0
+
+
 .PHONY: docs
 docs: conan
 	cmake --build build/debug/conan --target docs

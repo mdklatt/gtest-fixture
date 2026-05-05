@@ -1,13 +1,48 @@
-""" Define Conan configurations.
-
-"""
 from conan import ConanFile
+from conan.tools.cmake import CMake, cmake_layout
 
 
 class GTestFixtureRecipe(ConanFile):
-    """ Conan recipe for the gtest-fixture library.
+    """
 
     """
-    requires = ["gtest/1.14.0"]
-    settings = ["os", "compiler", "build_type", "arch"]
-    generators = ["CMakeToolchain", "CMakeDeps"]
+    name = "gtest-fixture"
+    version = "0.1.0"
+
+    settings = "os", "compiler", "build_type", "arch"
+    requires = "gtest/1.14.0"
+
+    generators = "CMakeToolchain", "CMakeDeps"
+
+
+    exports_sources = (
+        "CMakeLists.txt",
+        "src/*",
+        "include/*",
+        "cmake/*",
+    )
+
+    def layout(self):
+        cmake_layout(self)
+
+    def build(self):
+        cmake = CMake(self)
+
+        cmake.configure(variables={
+            "BUILD_TESTING": False
+        })
+        cmake.build()
+
+    def package(self):
+        cmake = CMake(self)
+        cmake.install()
+
+    def package_info(self):
+        properties = {
+            "cmake_file_name": "gtest-fixture",
+            "cmake_target_name": "gtest-fixture::gtest-fixture",
+        }
+        map(self.cpp_info.set_property, properties.items())
+        self.cpp_info.libs = ["gtest-fixture"]
+        return
+

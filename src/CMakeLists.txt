@@ -1,6 +1,11 @@
+include(CMakePackageConfigHelpers)
+include(GNUInstallDirs)
+
+
+
 # Define targets.
 
-add_library(${name}
+add_library(gtest-fixture
     environ.cpp
     network.cpp
     stream.cpp
@@ -8,23 +13,22 @@ add_library(${name}
 )
 add_library(gtest-fixture::gtest-fixture ALIAS gtest-fixture)
 
-target_include_directories(${name}
+target_include_directories(gtest-fixture
 PUBLIC
     # Interface paths are relative to the installation path, not the current
     # directory.
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
-PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/src
+#PRIVATE
+#    ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
-target_link_libraries(${name}
+target_link_libraries(gtest-fixture
 PRIVATE
     GTest::gtest
 )
 
 # Generate package config files.
 
-include(CMakePackageConfigHelpers)
 
 configure_package_config_file(
     cmake/gtest-fixture-config.cmake.in
@@ -42,9 +46,7 @@ write_basic_package_version_file(
 
 # Define installation rules.
 
-include(GNUInstallDirs)
-
-install(TARGETS ${name}
+install(TARGETS gtest-fixture
     EXPORT gtest-fixture-targets
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
