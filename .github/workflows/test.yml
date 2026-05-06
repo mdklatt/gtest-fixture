@@ -11,13 +11,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out project
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Set up CMake
-        uses: jwlawson/actions-setup-cmake@v2.0
+        uses: jwlawson/actions-setup-cmake@v2
         with:
           cmake-version: "3.23"
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.x"  # latest installed version
       - name: Set up development environment
@@ -28,4 +28,4 @@ jobs:
           make build
       - name: Run tests
         run: |
-          make test
+          make test test-package

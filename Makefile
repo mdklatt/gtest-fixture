@@ -6,7 +6,7 @@ PYTHON = . $(VENV)/bin/activate && python3
 
 
 $(VENV)/.make-update: requirements-env.txt
-	python -m venv $(VENV)
+	python3 -m venv $(VENV)
 	$(PYTHON) -m pip install -U pip  # needs to be updated first
 	$(PYTHON) -m pip install -U -r $<
 	touch $@
@@ -37,8 +37,7 @@ test: build
 
 .PHONY: test-package
 test-package:
-	. $(VENV)/bin/activate
-	conan test gtest-fixture/0.1.0
+	$(CONAN) create . --build=missing
 
 
 .PHONY: docs
