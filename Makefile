@@ -2,7 +2,7 @@
 
 VENV = venv
 CONAN = . $(VENV)/bin/activate && conan
-PYTHON = . $(VENV)/bin/activate && python
+PYTHON = . $(VENV)/bin/activate && python3
 
 
 $(VENV)/.make-update: requirements-env.txt
@@ -15,8 +15,8 @@ $(VENV)/.make-update: requirements-env.txt
 .PHONY: conan
 conan: conanfile.py
 	$(CONAN) profile detect --exist-ok
-	$(CONAN) install --build=missing --output-folder=build/debug/conan --settings=build_type=Debug .
-	$(CONAN) install --build=missing --output-folder=build/release/conan --settings=build_type=Release .
+	$(CONAN) install --build=missing --settings=build_type=Debug .
+	$(CONAN) install --build=missing --settings=build_type=Release .
 
 
 .PHONY: dev
@@ -32,8 +32,7 @@ build: dev
 
 .PHONY: test
 test: build
-	. $(VENV)/bin/activate
-	cd build/debug/conan && ctest --output-on-failure
+	ctest --test-dir build/Debug --output-on-failure
 
 
 .PHONY: test-package
@@ -44,4 +43,4 @@ test-package:
 
 .PHONY: docs
 docs: conan
-	cmake --build build/debug/conan --target docs
+	cmake --build build/Debug --target docs
