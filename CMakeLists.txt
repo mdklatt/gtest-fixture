@@ -1,8 +1,18 @@
 cmake_minimum_required(VERSION 3.23)
 
+
+# Get the project version from an external file that is also used by Conan.
+set(_version_file "${CMAKE_SOURCE_DIR}/version.txt")
+file(READ "${_version_file}" PROJECT_VERSION)
+string(STRIP "${PROJECT_VERSION}" PROJECT_VERSION)
+if(PROJECT_VERSION STREQUAL "")
+    message(FATAL_ERROR "${_version_file} is empty")
+endif()
+
 project(gtest-fixture
     # Semantic Versioning: <https://semver.org>
-    VERSION 0.1.0.36  # add build number to designate a dev version
+    # The build number is optional and designates a dev version.
+    VERSION ${PROJECT_VERSION}
     LANGUAGES CXX
 )
 

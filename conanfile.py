@@ -1,5 +1,7 @@
+from pathlib import Path
+
 from conan import ConanFile
-from conan.tools.cmake import CMake, cmake_layout
+from conan.tools.cmake import CMake, CMakeToolchain, CMakeDeps, cmake_layout
 
 
 class GTestFixtureRecipe(ConanFile):
@@ -7,7 +9,6 @@ class GTestFixtureRecipe(ConanFile):
 
     """
     name = "gtest-fixture"
-    version = "0.1.0"
 
     settings = "os", "compiler", "build_type", "arch"
     requires = "gtest/1.14.0"
@@ -23,6 +24,7 @@ class GTestFixtureRecipe(ConanFile):
 
 
     exports_sources = (
+        "version.txt",
         "CMakeLists.txt",
         "src/*",
         "include/*",
@@ -30,6 +32,18 @@ class GTestFixtureRecipe(ConanFile):
     )
 
     test_package_folder = "tests/package"
+
+    def set_version(self):
+        """ Set the project version from a file.
+
+        This file is also used by CMakeLists.txt, so this must be a
+        '<major>.<minor>.<patch>[.<build>]' version, where the build number is
+        optional and designates a dev version.
+
+        """
+        path = Path(self.recipe_folder, "version.txt")
+        self.version = path.read_text().strip()
+        return
 
     def layout(self):
         cmake_layout(self)
