@@ -29,6 +29,8 @@ class GTestFixtureRecipe(ConanFile):
         "cmake/*",
     )
 
+    test_package_folder = "tests/package"
+
     def layout(self):
         cmake_layout(self)
 
