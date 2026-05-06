@@ -1,35 +1,40 @@
+""" Conanfile for the 'gtest-fixture' project.
+
+"""
 from pathlib import Path
 
 from conan import ConanFile
-from conan.tools.cmake import CMake, CMakeToolchain, CMakeDeps, cmake_layout
+from conan.tools.cmake import CMake, cmake_layout
 
 
-class GTestFixtureRecipe(ConanFile):
-    """
+class ProjectRecipe(ConanFile):
+    """ Conan consumer/producer recipe for this project.
 
+    This integrates with CMake for managing dependencies and building the
+    project. It is also used to create and test Conan package for downstream
+    consumers.
     """
     name = "gtest-fixture"
 
-    settings = "os", "compiler", "build_type", "arch"
-    requires = "gtest/1.14.0"
-
+    requires = "gtest/1.14.0",
     generators = "CMakeToolchain", "CMakeDeps"
+    settings = "os", "compiler", "build_type", "arch"
 
     options = {
-        "build_tests": [True, False],
+        "build_tests": (True, False),
     }
+
     default_options = {
         "build_tests": False
     }
 
-
-    exports_sources = (
+    exports_sources = [
         "version.txt",
         "CMakeLists.txt",
         "src/*",
         "include/*",
         "cmake/*",
-    )
+    ]
 
     test_package_folder = "tests/package"
 
@@ -46,9 +51,16 @@ class GTestFixtureRecipe(ConanFile):
         return
 
     def layout(self):
+        """ Define the project layout expected by the build tool.
+
+        """
         cmake_layout(self)
+        return
 
     def build(self):
+        """ Build the project's artifacts when creating a package.
+
+        """
         cmake = CMake(self)
         cmake.configure(variables={
             "BUILD_TESTING": self.options.build_tests
@@ -57,10 +69,17 @@ class GTestFixtureRecipe(ConanFile):
         return
 
     def package(self):
+        """ Create a package from the project's artifacts.
+
+        """
         cmake = CMake(self)
         cmake.install()
+        return
 
     def package_info(self):
+        """ Define metadata required by package consumers.
+
+        """
         properties = {
             "cmake_file_name": "gtest-fixture",
             "cmake_target_name": "gtest-fixture::gtest-fixture",
@@ -68,4 +87,3 @@ class GTestFixtureRecipe(ConanFile):
         map(self.cpp_info.set_property, properties.items())
         self.cpp_info.libs = ["gtest-fixture"]
         return
-
