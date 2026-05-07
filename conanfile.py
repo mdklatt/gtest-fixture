@@ -16,7 +16,6 @@ class ProjectRecipe(ConanFile):
     """
     name = "gtest-fixture"
 
-    requires = "gtest/1.14.0",
     generators = "CMakeToolchain", "CMakeDeps"
     settings = "os", "compiler", "build_type", "arch"
 
@@ -48,6 +47,19 @@ class ProjectRecipe(ConanFile):
         """
         path = Path(self.recipe_folder, "version.txt")
         self.version = path.read_text().strip()
+        return
+
+    def requirements(self):
+        """ Define project requirements.
+
+        """
+        private = {
+            # Equivalent to CMake `link_libraries(PRIVATE ...)`. Requirements
+            # that use this are not propagated to consumers.
+            "transitive_headers": False,
+            "transitive_libs": False
+        }
+        self.requires("gtest/[>=1.14.0 <1.15.0]", **private)
         return
 
     def layout(self):
