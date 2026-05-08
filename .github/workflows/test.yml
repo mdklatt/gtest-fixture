@@ -26,6 +26,6 @@ jobs:
       - name: Build project
         run: |
           make build
-      - name: Run tests
+      - name: Run all tests
         run: |
-          make test test-package
+          make test

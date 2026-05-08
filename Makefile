@@ -3,6 +3,7 @@
 VENV = venv
 CONAN = . $(VENV)/bin/activate && conan
 PYTHON = . $(VENV)/bin/activate && python3
+PYTEST = $(PYTHON) -m pytest -v
 
 
 $(VENV)/.make-update: requirements-env.txt
@@ -30,14 +31,18 @@ build: dev
 	cmake --build --preset conan-debug
 
 
-.PHONY: test
-test: build
+.PHONY: test-unit
+test-unit: build
 	ctest --test-dir build/Debug --output-on-failure
 
 
-.PHONY: test-package
-test-package:
-	$(CONAN) create . --build=missing
+.PHONY: test-integration
+test-integration: build
+	$(PYTEST) tests/integration/
+
+
+.PHONY: test
+test: test-unit test-integration
 
 
 .PHONY: docs

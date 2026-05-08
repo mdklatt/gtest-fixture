@@ -1,22 +1,29 @@
-# Verify that the installed libraries are usable to downstream applications via
-# CMake. The sample application 'test_lib' is built using both the project
-# tree and an installed version.
+cmake_minimum_required(VERSION 3.16)
+project(test_lib LANGUAGES CXX)
 
-# Give find_package() some help locating the correct Python executable.
-set(Python3_EXECUTABLE "$ENV{SYSTEM_PYTHON}")
-set(python_min_version 3.9)
-find_package(Python3 ${python_min_version} COMPONENTS Interpreter)
-if (NOT Python3_FOUND)
-    message(WARNING "Skipping integration tests; requires Python ${python_min_version}+")
-    return()
+find_package(GTest REQUIRED)
+if(IS_DIRECTORY ${LIBRARY_SOURCE_DIR})
+    # This uses the existing project directory, so uncommitted changes may hide
+    # errors that would occur in a clean checkout.
+    message(STATUS "Testing library build tree at ${LIBRARY_SOURCE_DIR}")
+    add_subdirectory(${LIBRARY_SOURCE_DIR} ${LIBRARY_SOURCE_DIR}/build)
+else()
+    # All default search locations are disabled to ensure that only the test
+    # installation is found.
+    message(STATUS "Testing installed library at ${path}")
+#    list(APPEND CMAKE_MODULE_PATH "${CMAKE_PREFIX_PATH}/cmake")
+#    message(STATUS "CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
+    find_package(GTestFixture REQUIRED)
 endif()
 
-message(STATUS "Enabling integration tests using ${Python3_EXECUTABLE}")
-set(test_types source install)
-foreach(type ${test_types})
-    add_test(
-        NAME "integration_${type}_build"
-        COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test_integration.py ${type}
-        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-    )
-endforeach()
+add_executable(test_lib test_lib.cpp)
+target_link_libraries(test_lib
+PRIVATE
+    GTestFixture::gtest-fixture
+    GTest::gtest
+    GTest::gtest_main
+)
+target_compile_features(test_lib
+PRIVATE
+    cxx_std_17
+)

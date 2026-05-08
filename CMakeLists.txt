@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.23)
 
 
 # Get the project version from an external file that is also used by Conan.
-set(_version_file "${CMAKE_SOURCE_DIR}/version.txt")
+set(_version_file "${CMAKE_CURRENT_SOURCE_DIR}/version.txt")
 file(READ "${_version_file}" PROJECT_VERSION)
 string(STRIP "${PROJECT_VERSION}" PROJECT_VERSION)
 if(PROJECT_VERSION STREQUAL "")
