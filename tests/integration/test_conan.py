@@ -1,18 +1,18 @@
 """ Verify the that the library is usable as a Conan package.
 
 """
-import pytest
 from pathlib import Path
 from subprocess import run
 
+import pytest
+
 
 @pytest.fixture(scope="module")
-def requires() -> list[str]:
+def requires(version) -> list[str]:
     """ Conan requirement specifiers.
 
     :return: requirements
     """
-    version = Path("version.txt").read_text().strip()
     return [f"gtest-fixture/{version}", "gtest/1.14.0"]
 
 

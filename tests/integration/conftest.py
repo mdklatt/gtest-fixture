@@ -1,12 +1,29 @@
 """ Global test configuration for this subdirectory.
 
 """
-from configparser import ConfigParser
 from pathlib import Path
 from subprocess import PIPE, run, STDOUT
 from typing import Callable
 
 import pytest
+
+
+@pytest.fixture(scope="session")
+def assets() -> Path:
+    """ Test assets directory
+
+    :return: assets path
+    """
+    return Path(__file__).parent / "assets"
+
+
+@pytest.fixture(scope="session")
+def version() -> str:
+    """ Get the current project version.
+
+    :return: version string
+    """
+    return Path("version.txt").read_text().strip()
 
 
 @pytest.fixture
