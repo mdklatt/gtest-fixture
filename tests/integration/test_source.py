@@ -1,9 +1,10 @@
 """ Verify the that the library is usable as an external build tree.
 
 """
-import pytest
 from pathlib import Path
 from subprocess import run
+
+import pytest
 
 
 def test_lib(build, build_dir):
@@ -13,7 +14,7 @@ def test_lib(build, build_dir):
     defs = {
         "LIBRARY_SOURCE_DIR": Path.cwd(),
     }
-    source_dir = Path(__file__).parent
+    source_dir = Path(__file__).parent / "src"
     build(source_dir, build_dir, defs)
     exe = build_dir / "test_lib"
     process = run([str(exe)], capture_output=True)

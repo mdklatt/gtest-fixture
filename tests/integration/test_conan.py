@@ -34,7 +34,7 @@ def test_lib(build, build_dir):
     """ Test the library as part of an application.
 
     """
-    source_dir = Path(__file__).parent
+    source_dir = Path(__file__).parent / "src"
     build(source_dir, build_dir)
     exe = build_dir / "test_lib"
     process = run([str(exe)], capture_output=True)
