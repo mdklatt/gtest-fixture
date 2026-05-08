@@ -1,8 +1,8 @@
 /**
- * Test the gtest-fixture library.
+ * Test the gtest-fixture Conan pckage.
  *
- * Verify that the library is usable in an external CMake project by testing
- * that all headers are present and all modules are linkable.
+ * Verify that all components of the library are usable when installed from
+ * a Conan pckage.
  */
 #include "gtest-fixture/environ.hpp"
 #include "gtest-fixture/stream.hpp"

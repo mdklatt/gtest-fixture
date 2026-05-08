@@ -29,7 +29,7 @@ class GTestFixtureTestPackage(ConanFile):
     def test(self):
         if not self.conf.get("tools.build:skip_test", default=False):
             self.run(
-                self.cpp.build.bindirs[0] + "/test_lib",
+                self.cpp.build.bindirs[0] + "/test_package",
                 env="conanrun"
             )
         return

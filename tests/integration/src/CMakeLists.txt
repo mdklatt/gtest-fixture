@@ -27,6 +27,6 @@ find_package(GTest REQUIRED)
 add_executable(test_lib test_lib.cpp)
 target_link_libraries(test_lib
 PRIVATE
-    gtest-fixture::gtest-fixture
+    GTestFixture::gtest-fixture
     GTest::gtest_main
 )

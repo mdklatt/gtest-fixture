@@ -93,9 +93,10 @@ class ProjectRecipe(ConanFile):
 
         """
         properties = {
-            "cmake_file_name": "gtest-fixture",
-            "cmake_target_name": "gtest-fixture::gtest-fixture",
+            "cmake_file_name": "GTestFixture",
+            "cmake_target_name": "GTestFixture::gtest-fixture",
         }
-        map(self.cpp_info.set_property, properties.items())
+        for name, value in properties.items():
+            self.cpp_info.set_property(name, value)
         self.cpp_info.libs = ["gtest-fixture"]
         return

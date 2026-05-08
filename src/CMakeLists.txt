@@ -11,7 +11,7 @@ add_library(gtest-fixture
     stream.cpp
     tmpdir.cpp
 )
-add_library(gtest-fixture::gtest-fixture ALIAS gtest-fixture)
+add_library(GTestFixture::gtest-fixture ALIAS gtest-fixture)
 
 target_include_directories(gtest-fixture
 PUBLIC
@@ -29,14 +29,14 @@ PRIVATE
 
 
 configure_package_config_file(
-    cmake/gtest-fixture-config.cmake.in
-    ${CMAKE_CURRENT_BINARY_DIR}/gtest-fixture-config.cmake
+    cmake/GTestFixtureConfig.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/GTestFixtureConfig.cmake
 INSTALL_DESTINATION
-    ${CMAKE_INSTALL_LIBDIR}/cmake/gtest-fixture
+    ${CMAKE_INSTALL_LIBDIR}/cmake/GTestFixture
 )
 
 write_basic_package_version_file(
-    ${CMAKE_CURRENT_BINARY_DIR}/gtest-fixture-config-version.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/GTestFixtureConfigVersion.cmake
     VERSION ${PROJECT_VERSION}
     COMPATIBILITY AnyNewerVersion
 )
@@ -45,7 +45,7 @@ write_basic_package_version_file(
 # Define installation rules.
 
 install(TARGETS gtest-fixture
-    EXPORT gtest-fixture-targets
+    EXPORT GTestFixtureTargets
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
@@ -53,16 +53,16 @@ install(TARGETS gtest-fixture
 
 install(
 FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/gtest-fixture-config.cmake
-    ${CMAKE_CURRENT_BINARY_DIR}/gtest-fixture-config-version.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/GTestFixtureConfig.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/GTestFixtureConfigVersion.cmake
 DESTINATION
-    ${CMAKE_INSTALL_LIBDIR}/cmake/gtest-fixture
+    ${CMAKE_INSTALL_LIBDIR}/cmake/GTestFixture
 )
 
-install(EXPORT gtest-fixture-targets
-    FILE gtest-fixture-targets.cmake
-    NAMESPACE gtest-fixture::
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/gtest-fixture
+install(EXPORT GTestFixtureTargets
+    FILE GTestFixtureTargets.cmake
+    NAMESPACE GTestFixture::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/GTestFixture
 )
 
 
@@ -70,8 +70,8 @@ install(EXPORT gtest-fixture-targets
 # via `add_subdirectory()`, then `find_package()` will work without
 # requiring this project to be installed.
 
-export(EXPORT gtest-fixture-targets
-    FILE ${CMAKE_CURRENT_BINARY_DIR}/gtest-fixture-targets.cmake
-    NAMESPACE gtest-fixture::
+export(EXPORT GTestFixtureTargets
+    FILE ${CMAKE_CURRENT_BINARY_DIR}/GTestFixtureTargets.cmake
+    NAMESPACE GTestFixture::
 )
-export(PACKAGE gtest-fixture)
+export(PACKAGE GTestFixture)

@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 3.15)
-project(test_gtest_fixture LANGUAGES CXX)
+project(test_packagee LANGUAGES CXX)
 
-find_package(gtest-fixture REQUIRED)
+find_package(GTestFixture REQUIRED)
 
-add_executable(test_lib test_lib.cpp)
+add_executable(test_package test_package.cpp)
 
-target_link_libraries(test_lib
-    gtest-fixture::gtest-fixture
+target_link_libraries(test_package
+    GTestFixture::gtest-fixture
 )
 
-target_compile_features(test_lib PRIVATE cxx_std_17)
+target_compile_features(test_package PRIVATE cxx_std_17)
