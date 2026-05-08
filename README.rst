@@ -62,7 +62,7 @@ when it goes out of scope.
 In most situations, fixtures should be given test scope by using them as a
 non-static member of a ``Test`` class or inside a ``TEST*`` function.
 
-.. code-block::
+.. code-block:: c++
 
     class FixtureTest: public testing::Test {
     protected:
@@ -84,7 +84,7 @@ done by wrapping a fixture in the ``Shared<>`` adaptor and making it a static
 member of a ``Test`` class. Clean up is done in the ``TearDownTestSuite``
 method. `Global resource sharing`_ is similar.
 
-.. code-block::
+.. code-block:: c++
 
     class SharedFixtureTest: public testing::Test {
     protected:
