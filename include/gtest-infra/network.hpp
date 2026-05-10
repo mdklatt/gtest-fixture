@@ -1,8 +1,8 @@
 /**
  * Capture output streams for inspection.
  */
-#ifndef GTEST_FIXTURE_NETWORK_HPP
-#define GTEST_FIXTURE_NETWORK_HPP
+#ifndef GTEST_INFRA_NETWORK_HPP
+#define GTEST_INFRA_NETWORK_HPP
 
 #include <atomic>
 #include <functional>
@@ -240,8 +240,6 @@ public:
 
     /**
      * Destruct an instance.
-     *
-     * The original contents of the input stream will be restored.
      */
     virtual ~TcpServerFixture();
 
@@ -314,4 +312,4 @@ private:
 }  // testing::fixture::network
 
 
-#endif  // GTEST_FIXTURE_NETWORK_HPP
+#endif  // GTEST_INFRA_NETWORK_HPP

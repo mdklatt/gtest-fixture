@@ -1,4 +1,4 @@
-""" Conanfile for the 'gtest-fixture' project.
+""" Conanfile for the 'gtest-infra' project.
 
 """
 from pathlib import Path
@@ -14,7 +14,7 @@ class ProjectRecipe(ConanFile):
     project. It is also used to create and test Conan package for downstream
     consumers.
     """
-    name = "gtest-fixture"
+    name = "gtest-infra"
 
     generators = "CMakeToolchain", "CMakeDeps"
     settings = "os", "compiler", "build_type", "arch"
@@ -94,9 +94,9 @@ class ProjectRecipe(ConanFile):
         """
         properties = {
             "cmake_file_name": "GTestFixture",
-            "cmake_target_name": "GTestFixture::gtest-fixture",
+            "cmake_target_name": "GTestFixture::gtest-infra",
         }
         for name, value in properties.items():
             self.cpp_info.set_property(name, value)
-        self.cpp_info.libs = ["gtest-fixture"]
+        self.cpp_info.libs = ["gtest-infra"]
         return

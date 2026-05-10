@@ -5,22 +5,22 @@ include(GNUInstallDirs)
 
 # Define targets.
 
-add_library(gtest-fixture
+add_library(gtest-infra
     environ.cpp
     network.cpp
     stream.cpp
     tmpdir.cpp
 )
-add_library(GTestFixture::gtest-fixture ALIAS gtest-fixture)
+add_library(GTestFixture::gtest-infra ALIAS gtest-infra)
 
-target_include_directories(gtest-fixture
+target_include_directories(gtest-infra
 PUBLIC
     # Interface paths are relative to the installation path, not the current
     # directory.
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
 )
-target_link_libraries(gtest-fixture
+target_link_libraries(gtest-infra
 PRIVATE
     GTest::gtest
 )
@@ -44,7 +44,7 @@ write_basic_package_version_file(
 
 # Define installation rules.
 
-install(TARGETS gtest-fixture
+install(TARGETS gtest-infra
     EXPORT GTestFixtureTargets
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}

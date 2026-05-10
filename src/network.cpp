@@ -1,4 +1,4 @@
-#include "gtest-fixture/network.hpp"
+#include "gtest-infra/network.hpp"
 #include <cassert>
 #include <cmath>
 #include <cstring>
@@ -49,7 +49,7 @@ namespace {
  * @param port: target port
  * @return socket address
  */
-unique_ptr<addrinfo, void (*)(addrinfo *)> create_address(const string &host, in_port_t port) {
+unique_ptr<addrinfo, void (*)(addrinfo *)> create_address(const string& host, in_port_t port) {
     const auto port_str{to_string(port)};
     addrinfo hints{};
     hints.ai_family = AF_INET;
@@ -145,7 +145,7 @@ int bind_socket(int sock, const addrinfo* addr) {
  * @param data bytes to send
  */
 void send_socket(int sock, Bytes data) {
-    while (data.size() > 0) {
+    while (not data.empty()) {
         // Continue until all data has been sent.
         const auto count{send(sock, data.data(), data.size(), 0)};
         if (count == -1) {

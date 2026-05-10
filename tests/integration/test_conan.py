@@ -13,7 +13,7 @@ def requires(version) -> list[str]:
 
     :return: requirements
     """
-    return [f"gtest-fixture/{version}", "gtest/1.14.0"]
+    return [f"gtest-infra/{version}", "gtest/1.14.0"]
 
 
 @pytest.fixture(scope="module")

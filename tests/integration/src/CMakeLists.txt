@@ -19,7 +19,7 @@ endif()
 add_executable(test_lib test_lib.cpp)
 target_link_libraries(test_lib
 PRIVATE
-    GTestFixture::gtest-fixture
+    GTestFixture::gtest-infra
     GTest::gtest
     GTest::gtest_main
 )

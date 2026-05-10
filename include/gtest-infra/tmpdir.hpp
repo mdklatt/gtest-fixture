@@ -3,8 +3,8 @@
  *
  * @file
  */
-#ifndef GTEST_FIXTURE_TMPDIR_HPP
-#define GTEST_FIXTURE_TMPDIR_HPP
+#ifndef GTEST_INFRA_TMPDIR_HPP
+#define GTEST_INFRA_TMPDIR_HPP
 
 #include <filesystem>
 #include <map>
@@ -85,4 +85,4 @@ private:
 }  // testing::fixture::tmpdir
 
 
-#endif  // GTEST_FIXTURE_TMPDIR_HPP
+#endif  // GTEST_INFRA_TMPDIR_HPP

@@ -1,6 +1,6 @@
 {
-  "name": "gtest-fixture",
-  "version": "0.1.0.37",
+  "name": "gtest-infra",
+  "version": "0.1.0.38",
   "dependencies": [
     {
       "name": "gtest",

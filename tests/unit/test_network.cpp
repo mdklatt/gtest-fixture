@@ -4,8 +4,8 @@
  * Link all test files with the `gtest_main` library to create a command-line
  * test runner.
  */
-#include "gtest-fixture/network.hpp"
-#include "gtest-fixture/shared.hpp"
+#include "gtest-infra/network.hpp"
+#include "gtest-infra/shared.hpp"
 #include <gtest/gtest.h>
 #include <sys/socket.h>
 #include <algorithm>

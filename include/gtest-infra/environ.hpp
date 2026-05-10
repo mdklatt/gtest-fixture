@@ -3,8 +3,8 @@
  *
  * @file
  */
-#ifndef GTEST_FIXTURE_ENVIRON_HPP
-#define GTEST_FIXTURE_ENVIRON_HPP
+#ifndef GTEST_INFRA_ENVIRON_HPP
+#define GTEST_INFRA_ENVIRON_HPP
 
 #include <map>
 #include <memory>
@@ -91,4 +91,4 @@ private:
 
 }  // testing::fixture::environ
 
-#endif  // GTEST_FIXTURE_ENVIRON_HPP
+#endif  // GTEST_INFRA_ENVIRON_HPP

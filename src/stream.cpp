@@ -1,4 +1,4 @@
-#include "gtest-fixture/stream.hpp"
+#include "gtest-infra/stream.hpp"
 #include <fstream>
 #include <stdexcept>
 

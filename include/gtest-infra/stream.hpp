@@ -1,8 +1,8 @@
 /**
  * Capture output streams for inspection.
  */
-#ifndef GTEST_FIXTURE_STREAM_HPP
-#define GTEST_FIXTURE_STREAM_HPP
+#ifndef GTEST_INFRA_STREAM_HPP
+#define GTEST_INFRA_STREAM_HPP
 
 #include <filesystem>
 #include <memory>
@@ -103,4 +103,4 @@ private:
 }  // testing::fixture::stream
 
 
-#endif  // GTEST_FIXTURE_STREAM_HPP
+#endif  // GTEST_INFRA_STREAM_HPP

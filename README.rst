@@ -1,6 +1,6 @@
-#############
-gtest-fixture
-#############
+###########
+gtest-infra
+###########
 
 |c++17|
 |cmake|
@@ -151,15 +151,15 @@ Build documentation:
    :alt: C++17
 .. |cmake| image:: https://img.shields.io/static/v1?label=cmake&message=3.16&color=informational
    :alt: CMake 3.16
-.. |license| image:: https://img.shields.io/github/license/mdklatt/gtest-fixture
+.. |license| image:: https://img.shields.io/github/license/mdklatt/gtest-infra
    :alt: MIT License
    :target: `MIT License`_
-.. |tests| image:: https://github.com/mdklatt/gtest-fixture/actions/workflows/test.yml/badge.svg
+.. |tests| image:: https://github.com/mdklatt/gtest-infra/actions/workflows/test.yml/badge.svg
    :alt: CI Test
    :target: `GitHub Actions`_
 
 .. _CTest: https://cmake.org/cmake/help/latest/manual/ctest.1.html
-.. _GitHub Actions: https://github.com/mdklatt/gtest-fixture/actions/workflows/test.yml
+.. _GitHub Actions: https://github.com/mdklatt/gtest-infra/actions/workflows/test.yml
 .. _Global resource sharing: https://google.github.io/googletest/advanced.html#global-set-up-and-tear-down
 .. _GoogleTest: http://google.github.io/googletest/
 .. _GoogleTest module: https://cmake.org/cmake/help/latest/module/GoogleTest.html

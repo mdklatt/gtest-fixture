@@ -3,8 +3,8 @@
  *
  * @file
  */
-#ifndef GTEST_FIXTURE_SHARED_HPP
-#define GTEST_FIXTURE_SHARED_HPP
+#ifndef GTEST_INFRA_SHARED_HPP
+#define GTEST_INFRA_SHARED_HPP
 
 #include <memory>
 #include <stdexcept>
@@ -62,4 +62,4 @@ namespace testing::fixture::shared {
     };
 }  // testing::fixture::shared
 
-#endif  // GTEST_FIXTURE_SHARED_HPP
+#endif  // GTEST_INFRA_SHARED_HPP

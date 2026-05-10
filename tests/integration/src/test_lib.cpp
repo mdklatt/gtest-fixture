@@ -1,12 +1,12 @@
 /**
- * Test the gtest-fixture library.
+ * Test the gtest-infra library.
  *
  * Verify that the library is usable in an external CMake project by testing
  * that all headers are present and all modules are linkable.
  */
-#include "gtest-fixture/environ.hpp"
-#include "gtest-fixture/stream.hpp"
-#include "gtest-fixture/tmpdir.hpp"
+#include "gtest-infra/environ.hpp"
+#include "gtest-infra/stream.hpp"
+#include "gtest-infra/tmpdir.hpp"
 #include "gtest/gtest.h"
 #include <cstdlib>
 #include <fstream>

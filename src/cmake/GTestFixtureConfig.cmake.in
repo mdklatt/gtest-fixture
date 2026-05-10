@@ -1,6 +1,6 @@
 include(CMakeFindDependencyMacro)
 find_dependency(GTest)
 
-if(NOT TARGET @PROJECT_NAME@::gtest-fixture)
+if(NOT TARGET @PROJECT_NAME@::gtest-infra)
     include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@Targets.cmake")
 endif()

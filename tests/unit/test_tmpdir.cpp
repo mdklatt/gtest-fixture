@@ -4,7 +4,7 @@
  * Link all test files with the `gtest_main` library to create a command-line
  * test runner.
  */
-#include "gtest-fixture/tmpdir.hpp"
+#include "gtest-infra/tmpdir.hpp"
 #include <gtest/gtest.h>
 #include <string>
 
