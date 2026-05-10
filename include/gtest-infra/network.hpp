@@ -74,7 +74,7 @@ private:
 /**
  * Communicate with a TCP server under test.
  */
-class TcpClientFixture {
+class TcpClient {
 public:
     /**
      * Construct a new instance from a target address.
@@ -82,7 +82,7 @@ public:
      * @param host target hostname
      * @param port target port
      */
-    TcpClientFixture(const std::string& host, in_port_t port);
+    TcpClient(const std::string& host, in_port_t port);
 
     /**
      * Send data to the server.

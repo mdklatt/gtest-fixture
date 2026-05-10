@@ -30,7 +30,7 @@ using std::vector;
 using testing::infra::network::SOCKET_TIMEOUT;
 using testing::infra::network::Bytes;
 using testing::infra::network::TcpPort;
-using testing::infra::network::TcpClientFixture;
+using testing::infra::network::TcpClient;
 using testing::infra::network::TcpServerFixture;
 using testing::infra::network::TcpClientHandler;
 using testing::infra::network::TcpBufferHandler;
@@ -248,11 +248,11 @@ TcpPort::TcpPort() {
 }
 
 
-TcpClientFixture::TcpClientFixture(const string& host, in_port_t port):
+TcpClient::TcpClient(const string& host, in_port_t port):
     addr{create_address(host, port)} {}
 
 
-Bytes TcpClientFixture::send_data(const Bytes& data) {
+Bytes TcpClient::send_data(const Bytes& data) {
     Bytes response;
     const auto sock{create_socket(addr.get())};
     try {
@@ -269,7 +269,7 @@ Bytes TcpClientFixture::send_data(const Bytes& data) {
 }
 
 
-string TcpClientFixture::send_text(const string& text) {
+string TcpClient::send_text(const string& text) {
     const Bytes data{text.begin(), text.end()};
     const auto response{send_data(data)};
     return {response.begin(), response.end()};

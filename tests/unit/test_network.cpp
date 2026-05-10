@@ -72,14 +72,14 @@ TEST_F(TcpPortTest, shared) {
 
 
 /**
- * Test suite for the TcpClientFixture class
+ * Test suite for the TcpClient class
  */
-class TcpClientFixtureTest: public Test {
+class TcpClientTest: public Test {
 protected:
     /**
      * Per-test setup.
      */
-    TcpClientFixtureTest() {
+    TcpClientTest() {
         server.start();
     }
 
@@ -89,22 +89,22 @@ protected:
 
 
 /**
- * Test the TcpClientFixture::test_data() method.
+ * Test the TcpClient::test_data() method.
  */
-TEST_F(TcpClientFixtureTest, send_data) {
+TEST_F(TcpClientTest, send_data) {
     // This also tests the host constructor.
     static const vector<char> data{'A', 'B', 'C'};
-    TcpClientFixture client{"localhost", server.port()};
+    TcpClient client{"localhost", server.port()};
     EXPECT_EQ(data, client.send_data(data));
 }
 
 
 /**
- * Test TcpClientFixture communication via socket
+ * Test TcpClient communication via socket
  */
-TEST_F(TcpClientFixtureTest, send_text) {
+TEST_F(TcpClientTest, send_text) {
     static const string text{"ABC"};
-    TcpClientFixture client{"localhost", server.port()};
+    TcpClient client{"localhost", server.port()};
     EXPECT_EQ("ABC", client.send_text(text));
 }
 
