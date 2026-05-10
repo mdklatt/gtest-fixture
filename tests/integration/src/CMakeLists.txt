@@ -13,13 +13,13 @@ else()
     message(STATUS "Testing installed library at ${path}")
 #    list(APPEND CMAKE_MODULE_PATH "${CMAKE_PREFIX_PATH}/cmake")
 #    message(STATUS "CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
-    find_package(GTestFixture REQUIRED)
+    find_package(GTestInfra REQUIRED)
 endif()
 
 add_executable(test_lib test_lib.cpp)
 target_link_libraries(test_lib
 PRIVATE
-    GTestFixture::gtest-infra
+    GTestInfra::gtest-infra
     GTest::gtest
     GTest::gtest_main
 )

@@ -11,7 +11,7 @@ add_library(gtest-infra
     stream.cpp
     tmpdir.cpp
 )
-add_library(GTestFixture::gtest-infra ALIAS gtest-infra)
+add_library(GTestInfra::gtest-infra ALIAS gtest-infra)
 
 target_include_directories(gtest-infra
 PUBLIC
@@ -29,14 +29,14 @@ PRIVATE
 
 
 configure_package_config_file(
-    cmake/GTestFixtureConfig.cmake.in
-    ${CMAKE_CURRENT_BINARY_DIR}/GTestFixtureConfig.cmake
+    cmake/GTestInfraConfig.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/GTestInfraConfig.cmake
 INSTALL_DESTINATION
-    ${CMAKE_INSTALL_LIBDIR}/cmake/GTestFixture
+    ${CMAKE_INSTALL_LIBDIR}/cmake/GTestInfra
 )
 
 write_basic_package_version_file(
-    ${CMAKE_CURRENT_BINARY_DIR}/GTestFixtureConfigVersion.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/GTestInfraConfigVersion.cmake
     VERSION ${PROJECT_VERSION}
     COMPATIBILITY AnyNewerVersion
 )
@@ -45,7 +45,7 @@ write_basic_package_version_file(
 # Define installation rules.
 
 install(TARGETS gtest-infra
-    EXPORT GTestFixtureTargets
+    EXPORT GTestInfraTargets
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
@@ -53,16 +53,16 @@ install(TARGETS gtest-infra
 
 install(
 FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/GTestFixtureConfig.cmake
-    ${CMAKE_CURRENT_BINARY_DIR}/GTestFixtureConfigVersion.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/GTestInfraConfig.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/GTestInfraConfigVersion.cmake
 DESTINATION
-    ${CMAKE_INSTALL_LIBDIR}/cmake/GTestFixture
+    ${CMAKE_INSTALL_LIBDIR}/cmake/GTestInfra
 )
 
-install(EXPORT GTestFixtureTargets
-    FILE GTestFixtureTargets.cmake
-    NAMESPACE GTestFixture::
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/GTestFixture
+install(EXPORT GTestInfraTargets
+    FILE GTestInfraTargets.cmake
+    NAMESPACE GTestInfra::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/GTestInfra
 )
 
 
@@ -70,8 +70,8 @@ install(EXPORT GTestFixtureTargets
 # via `add_subdirectory()`, then `find_package()` will work without
 # requiring this project to be installed.
 
-export(EXPORT GTestFixtureTargets
-    FILE ${CMAKE_CURRENT_BINARY_DIR}/GTestFixtureTargets.cmake
-    NAMESPACE GTestFixture::
+export(EXPORT GTestInfraTargets
+    FILE ${CMAKE_CURRENT_BINARY_DIR}/GTestInfraTargets.cmake
+    NAMESPACE GTestInfra::
 )
-export(PACKAGE GTestFixture)
+export(PACKAGE GTestInfra)

@@ -93,8 +93,8 @@ class ProjectRecipe(ConanFile):
 
         """
         properties = {
-            "cmake_file_name": "GTestFixture",
-            "cmake_target_name": "GTestFixture::gtest-infra",
+            "cmake_file_name": "GTestInfra",
+            "cmake_target_name": "GTestInfra::gtest-infra",
         }
         for name, value in properties.items():
             self.cpp_info.set_property(name, value)

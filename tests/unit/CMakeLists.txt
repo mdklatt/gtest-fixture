@@ -9,7 +9,7 @@ add_executable(test_lib
 )
 target_link_libraries(test_lib
 PRIVATE
-    GTestFixture::gtest-infra
+    GTestInfra::gtest-infra
     GTest::gtest_main
 )
 

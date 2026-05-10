@@ -9,7 +9,7 @@ if(PROJECT_VERSION STREQUAL "")
     message(FATAL_ERROR "${_version_file} is empty")
 endif()
 
-project(GTestFixture
+project(GTestInfra
     # Semantic Versioning: <https://semver.org>
     # The build number is optional and designates a dev version.
     VERSION ${PROJECT_VERSION}
