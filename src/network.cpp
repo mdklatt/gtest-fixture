@@ -29,7 +29,7 @@ using std::unique_ptr;
 using std::vector;
 using testing::infra::network::SOCKET_TIMEOUT;
 using testing::infra::network::Bytes;
-using testing::infra::network::TcpPortFixture;
+using testing::infra::network::TcpPort;
 using testing::infra::network::TcpClientFixture;
 using testing::infra::network::TcpServerFixture;
 using testing::infra::network::TcpClientHandler;
@@ -194,15 +194,15 @@ Bytes read_socket(int sock) {
 float testing::infra::network::SOCKET_TIMEOUT = 1;
 
 
-const unique_ptr<addrinfo, void (*)(addrinfo*)> TcpPortFixture::addr{create_address()};
+const unique_ptr<addrinfo, void (*)(addrinfo*)> TcpPort::addr{create_address()};
 
 
-TcpPortFixture::operator in_port_t() const {
+TcpPort::operator in_port_t() const {
     return port;
 }
 
 
-in_port_t TcpPortFixture::reset() {
+in_port_t TcpPort::reset() {
     // Temporarily bind a socket local socket to get its auto-assigned port
     // number. There is no guarantee that the port number will still be
     // available once the caller attempts to use that port.
@@ -219,7 +219,7 @@ in_port_t TcpPortFixture::reset() {
 }
 
 
-int TcpPortFixture::bind() {
+int TcpPort::bind() {
     size_t max_attempts{10};
     int sock{-1};
     while (max_attempts-- > 0) {
@@ -243,7 +243,7 @@ int TcpPortFixture::bind() {
 }
 
 
-TcpPortFixture::TcpPortFixture() {
+TcpPort::TcpPort() {
     reset();
 }
 

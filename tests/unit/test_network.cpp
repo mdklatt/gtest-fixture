@@ -25,26 +25,26 @@ using std::vector;
 
 
 /**
- * Test suite for the TcpPortFixture class.
+ * Test suite for the TcpPort class.
  */
-class TcpPortFixtureTest: public Test {
+class TcpPortTest: public Test {
 protected:
-    TcpPortFixture port;
+    TcpPort port;
 };
 
 
 /**
- * Test the TcpPortFixture default constructor.
+ * Test the TcpPort default constructor.
  */
-TEST_F(TcpPortFixtureTest, ctor) {
+TEST_F(TcpPortTest, ctor) {
     EXPECT_NE(port, 0);
 }
 
 
 /**
- * Test the TcpPortFixture::reset() method.
+ * Test the TcpPort::reset() method.
  */
-TEST_F(TcpPortFixtureTest, reset) {
+TEST_F(TcpPortTest, reset) {
     const auto save{port};
     EXPECT_GE(port.reset(), 0);
     EXPECT_NE(port, save);
@@ -52,9 +52,9 @@ TEST_F(TcpPortFixtureTest, reset) {
 
 
 /**
- * Test the TcpPortFixture::bind() method.
+ * Test the TcpPort::bind() method.
  */
-TEST_F(TcpPortFixtureTest, bind) {
+TEST_F(TcpPortTest, bind) {
     const auto sock{port.bind()};
     EXPECT_GE(sock, 0);
     shutdown(sock, SHUT_RDWR);
@@ -62,10 +62,10 @@ TEST_F(TcpPortFixtureTest, bind) {
 
 
 /**
- * Test TcpPortFixture with the Shared<> adaptor.
+ * Test TcpPort with the Shared<> adaptor.
  */
-TEST_F(TcpPortFixtureTest, shared) {
-    Shared<TcpPortFixture> fixture;
+TEST_F(TcpPortTest, shared) {
+    Shared<TcpPort> fixture;
     EXPECT_NE(fixture->operator in_port_t(), 0);
     fixture.teardown();
 }
@@ -153,7 +153,7 @@ TEST_F(TcpServerFixtureTest, comm) {
 
 
 /**
- * Test TcpPortFixture with the Shared<> adaptor.
+ * Test TcpPort with the Shared<> adaptor.
  */
 TEST_F(TcpServerFixtureTest, shared) {
     Shared<TcpServerFixture> fixture{handler};

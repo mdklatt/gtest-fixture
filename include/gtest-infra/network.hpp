@@ -24,15 +24,15 @@ extern float SOCKET_TIMEOUT;  // seconds
 /**
  * Find an available TCP port on localhost.
  */
-class TcpPortFixture {
+class TcpPort {
 public:
     /**
      * Initialize this instance to an available port.
      */
-    TcpPortFixture();
+    TcpPort();
 
     /**
-     * Get the fixture's current port value.
+     * Get the current port value.
      *
      * There is no guarantee that this port is still available for binding.
      * See reset() and bind().
@@ -42,7 +42,7 @@ public:
     operator in_port_t() const;
 
     /**
-     * Reset the fixture's port value.
+     * Reset the port value.
      *
      * This can be used to find a new port if the current port has become
      * unavailable.
@@ -52,13 +52,13 @@ public:
      in_port_t reset();
 
     /**
-     * Bind a TCP socket to the fixture's port value.
+     * Bind a TCP socket to the port value.
      *
      * This eliminates the race condition where the port may become unavailable
      * before it can be bound to a socket. The caller assumes ownership of the
      * socket.
      *
-     * This will reset the fixture's current value as necessary to find an
+     * This will reset the current port value as necessary to find an
      * available port.
      *
      * @return socket descriptor bound to the current port

@@ -14,9 +14,9 @@ namespace testing::infra::shared {
     /**
      * Adaptor for sharing a fixture across multiple tests.
      *
-     * @tparam Fixture regular testing::fixture class
+     * @tparam Infra regular testing::infra class
      */
-    template <typename Fixture>
+    template <typename Infra>
     class Shared {
     public:
         /**
@@ -24,7 +24,7 @@ namespace testing::infra::shared {
          */
         template <typename ...Args>
         explicit Shared(Args&&... args) :
-            fixture{std::make_unique<Fixture>(args...)} {}
+            fixture{std::make_unique<Infra>(args...)} {}
 
         /**
          * Tear down the underlying fixture.
@@ -40,7 +40,7 @@ namespace testing::infra::shared {
          *
          * @return instance pointer
          */
-        Fixture const* operator->() const {
+        Infra const* operator->() const {
             if (not fixture) {
                 throw std::logic_error{"invalid fixture pointer"};
             }
@@ -48,7 +48,7 @@ namespace testing::infra::shared {
         }
 
         /** @overload */
-        Fixture* operator->() {
+        Infra* operator->() {
             if (not fixture) {
                 throw std::logic_error{"invalid fixture pointer"};
             }
@@ -58,7 +58,7 @@ namespace testing::infra::shared {
         Shared(const Shared&) = delete;
 
     private:
-        std::unique_ptr<Fixture> fixture;
+        std::unique_ptr<Infra> fixture;
     };
 }  // testing::infra::shared
 
