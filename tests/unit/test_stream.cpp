@@ -73,46 +73,46 @@ TEST_F(InputStreamTest, shared) {
 
 
 /**
- * Test suite for the OutputFixture class.
+ * Test suite for the OutputStream class.
  */
-class OutputFixtureTest: public Test {
+class OutputStreamTest: public Test {
 protected:
     ostringstream dest;
 };
 
 
 /**
- * Test OutputFixture capture with a stream.
+ * Test OutputStream capture with a stream.
  */
-TEST_F(OutputFixtureTest, capture_stream) {
+TEST_F(OutputStreamTest, capture_stream) {
     ostringstream stream;
-    OutputFixture fixture{stream, dest};
+    OutputStream fixture{stream, dest};
     stream << "abc";
     EXPECT_EQ("abc", dest.str());
 }
 
 
 /**
- * Test the OutputFixture destructor.
+ * Test the OutputStream destructor.
  */
-TEST_F(OutputFixtureTest, dtor) {
+TEST_F(OutputStreamTest, dtor) {
     ostringstream stream;
     stream << "abc";
-    auto fixture{make_unique<OutputFixture>(stream, dest)};
+    auto fixture{make_unique<OutputStream>(stream, dest)};
     stream << "def";  // captured, no output
-    fixture.reset();  // call ~OutputFixture()
+    fixture.reset();  // call ~OutputStream()
     stream << "xyz";
     EXPECT_EQ("abcxyz", stream.str());
 }
 
 
 /**
- * Test OutputFixture with passthrough.
+ * Test OutputStream with passthrough.
  */
-TEST_F(OutputFixtureTest, passthru) {
+TEST_F(OutputStreamTest, passthru) {
     ostringstream stream;
     stream << "abc";
-    auto fixture{make_unique<OutputFixture>(stream, dest, true)};
+    auto fixture{make_unique<OutputStream>(stream, dest, true)};
     stream << "def";  // forwarded output
     fixture.reset();
     stream << "xyz";
@@ -121,21 +121,21 @@ TEST_F(OutputFixtureTest, passthru) {
 
 
 /**
- * Test OutputFixture capture of std::cout.
+ * Test OutputStream capture of std::cout.
  */
-TEST_F(OutputFixtureTest, cout) {
-    OutputFixture fixture{std::cout, dest};
+TEST_F(OutputStreamTest, cout) {
+    OutputStream fixture{std::cout, dest};
     std::cout << "abc";
     EXPECT_EQ("abc", dest.str());
 }
 
 
 /**
- * Test OutputFixture with the Shared<> adaptor.
+ * Test OutputStream with the Shared<> adaptor.
  */
-TEST_F(OutputFixtureTest, shared) {
+TEST_F(OutputStreamTest, shared) {
     ostringstream stream;
-    Shared<OutputFixture> fixture{stream, dest};
+    Shared<OutputStream> fixture{stream, dest};
     stream << "abc";
     EXPECT_EQ("abc", dest.str());
     fixture.teardown();

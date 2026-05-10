@@ -21,7 +21,7 @@ fixture is destroyed. Note that changes to the environment are *not*
 thread-safe.
 
 
-OutputFixture
+OutputStream
 -------------
 
 Capture output to C++ streams for inspection. This can be used to test output
@@ -30,7 +30,7 @@ Compatibility with C streams is system-dependent.
 
 .. code-block::
 
-    OutputFixture stdout{std::cout};
+    OutputStream stdout{std::cout};
     std::cout << "output to std::cout";
     EXPECT_EQ("output to std::cout", stdout.str());
     std::printf("output to STDOUT");  // might or might not be captured

@@ -76,7 +76,7 @@ private:
 /**
  * Capture stream output for testing.
  */
-class OutputFixture {
+class OutputStream {
 public:
     /**
      * Construct a new instance.
@@ -85,14 +85,14 @@ public:
      * @param dest destination stream
      * @param passthru pass captured input along to the original stream
      */
-    OutputFixture(std::ostream& stream, std::ostream& dest, bool passthru = false);
+    OutputStream(std::ostream& stream, std::ostream& dest, bool passthru = false);
 
     /**
      * Destruct an instance.
      *
      * The captured stream will be restored to its original state.
      */
-    virtual ~OutputFixture();
+    virtual ~OutputStream();
 
 private:
     TeeBuffer teebuf;

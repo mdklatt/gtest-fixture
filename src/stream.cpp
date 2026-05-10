@@ -36,7 +36,7 @@ int TeeBuffer::overflow(int c) {
 }
 
 
-OutputFixture::OutputFixture(ostream& stream, ostream& dest, bool passthru):
+OutputStream::OutputStream(ostream& stream, ostream& dest, bool passthru):
     teebuf{dest.rdbuf(), passthru ? stream.rdbuf() : nullptr},
     stream{stream},
     origin{stream.rdbuf(&teebuf)} {
@@ -44,6 +44,6 @@ OutputFixture::OutputFixture(ostream& stream, ostream& dest, bool passthru):
 }
 
 
-OutputFixture::~OutputFixture() {
+OutputStream::~OutputStream() {
     stream.rdbuf(origin);
 }

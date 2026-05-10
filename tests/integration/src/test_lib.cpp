@@ -38,7 +38,7 @@ protected:
 
 private:
     testing::infra::stream::InputStream input{cin, stdin};
-    testing::infra::stream::OutputFixture output{cout, stdout};
+    testing::infra::stream::OutputStream output{cout, stdout};
 };
 
 
@@ -63,7 +63,7 @@ TEST_F(FixtureTest, input) {
 
 
 /**
- * Test the OutputFixture class.
+ * Test the OutputStream class.
  */
 TEST_F(FixtureTest, output) {
     cout << "TEST";
