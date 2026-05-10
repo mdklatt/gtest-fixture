@@ -17,7 +17,7 @@ namespace testing::infra::stream {
 /**
  * Replace the contents of an input stream.
  */
-class InputFixture {
+class InputStream {
 public:
     /**
      * Construct a new instance.
@@ -25,14 +25,14 @@ public:
      * @param stream stream to capture
      * @param input new stream contents
      */
-    InputFixture(std::istream& stream, std::istream& input);
+    InputStream(std::istream& stream, std::istream& input);
 
     /**
      * Destruct an instance.
      *
      * The original contents of the input stream will be restored.
      */
-    virtual ~InputFixture();
+    virtual ~InputStream();
 
 private:
     std::streambuf* origin;

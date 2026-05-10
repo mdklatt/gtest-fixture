@@ -12,12 +12,12 @@ using std::streambuf;
 using std::string;
 
 
-InputFixture::InputFixture(istream& stream, std::istream& input):
+InputStream::InputStream(istream& stream, std::istream& input):
         origin{stream.rdbuf(input.rdbuf())},
         stream{stream} {}
 
 
-InputFixture::~InputFixture() {
+InputStream::~InputStream() {
     stream.rdbuf(origin);
 }
 

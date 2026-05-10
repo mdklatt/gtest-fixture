@@ -23,49 +23,49 @@ using std::unique_ptr;
 /**
  * Test suite for the Environ class.
  */
-class InputFixtureTest: public Test {
+class InputStreamTest: public Test {
 protected:
     istringstream input{"abc"};
 };
 
 
 /**
- * Test InputFixture stream capture.
+ * Test InputStream stream capture.
  */
-TEST_F(InputFixtureTest, capture) {
+TEST_F(InputStreamTest, capture) {
     istringstream stream;
-    InputFixture fixture{stream, input};
+    InputStream fixture{stream, input};
     EXPECT_EQ('a', stream.get());
 }
 
 
 /**
- * Test the InputFixture destructor.
+ * Test the InputStream destructor.
  */
-TEST_F(InputFixtureTest, dtor) {
+TEST_F(InputStreamTest, dtor) {
     istringstream stream{"xyz"};
-    auto fixture{make_unique<InputFixture>(stream, input)};
+    auto fixture{make_unique<InputStream>(stream, input)};
     EXPECT_EQ('a', stream.get());
-    fixture.reset();  // call ~InputFixture()
+    fixture.reset();  // call ~InputStream()
     EXPECT_EQ('x', stream.get());
 }
 
 
 /**
- * Test InputFixture capture of std::cin.
+ * Test InputStream capture of std::cin.
  */
-TEST_F(InputFixtureTest, cin) {
-    InputFixture fixture{std::cin, input};
+TEST_F(InputStreamTest, cin) {
+    InputStream fixture{std::cin, input};
     EXPECT_EQ('a', std::cin.get());
 }
 
 
 /**
- * Test InputFixture with the Shared<> adaptor.
+ * Test InputStream with the Shared<> adaptor.
  */
-TEST_F(InputFixtureTest, shared) {
+TEST_F(InputStreamTest, shared) {
     istringstream stream{"xyz"};
-    Shared<InputFixture> fixture{stream, input};
+    Shared<InputStream> fixture{stream, input};
     EXPECT_EQ('a', stream.get());
     fixture.teardown();
     EXPECT_EQ('x', stream.get());

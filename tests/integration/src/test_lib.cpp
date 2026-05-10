@@ -37,7 +37,7 @@ protected:
     ostringstream stdout;
 
 private:
-    testing::infra::stream::InputFixture input{cin, stdin};
+    testing::infra::stream::InputStream input{cin, stdin};
     testing::infra::stream::OutputFixture output{cout, stdout};
 };
 
@@ -52,7 +52,7 @@ TEST_F(FixtureTest, environ) {
 
 
 /**
- * Test the InputFixture class.
+ * Test the InputStream class.
  */
 TEST_F(FixtureTest, input) {
     stdin.str("TEST");
