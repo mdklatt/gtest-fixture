@@ -13,7 +13,7 @@
 #include <netdb.h>
 
 
-namespace testing::fixture::network {
+namespace testing::infra::network {
 
 
 using Bytes = std::vector<char>;
@@ -309,7 +309,7 @@ private:
     //bool read(int sock);
 };
 
-}  // testing::fixture::network
+}  // testing::infra::network
 
 
 #endif  // GTEST_INFRA_NETWORK_HPP

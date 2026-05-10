@@ -4,7 +4,7 @@
 #include <stdexcept>
 
 
-using namespace testing::fixture::environ;
+using namespace testing::infra::environ;
 using std::string;
 using std::snprintf;
 using std::invalid_argument;

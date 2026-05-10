@@ -11,7 +11,7 @@
 #include <string>
 
 
-namespace testing::fixture::environ {
+namespace testing::infra::environ {
 
 /**
  * Test fixture for managing environment variables.
@@ -89,6 +89,6 @@ private:
     void save(const std::string& name);
 };
 
-}  // testing::fixture::environ
+}  // testing::infra::environ
 
 #endif  // GTEST_INFRA_ENVIRON_HPP

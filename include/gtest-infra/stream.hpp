@@ -12,7 +12,7 @@
 #include <vector>
 
 
-namespace testing::fixture::stream {
+namespace testing::infra::stream {
 
 /**
  * Replace the contents of an input stream.
@@ -100,7 +100,7 @@ private:
     std::ostream& stream;
 };
 
-}  // testing::fixture::stream
+}  // testing::infra::stream
 
 
 #endif  // GTEST_INFRA_STREAM_HPP

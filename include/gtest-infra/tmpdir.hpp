@@ -10,7 +10,7 @@
 #include <map>
 
 
-namespace testing::fixture::tmpdir {
+namespace testing::infra::tmpdir {
 
 /**
  * Fixture for managing temporary directories.
@@ -82,7 +82,7 @@ private:
     static std::map<size_t, std::filesystem::path> list_dirs();
 };
 
-}  // testing::fixture::tmpdir
+}  // testing::infra::tmpdir
 
 
 #endif  // GTEST_INFRA_TMPDIR_HPP

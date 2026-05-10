@@ -10,7 +10,7 @@
 #include <stdexcept>
 
 
-namespace testing::fixture::shared {
+namespace testing::infra::shared {
     /**
      * Adaptor for sharing a fixture across multiple tests.
      *
@@ -60,6 +60,6 @@ namespace testing::fixture::shared {
     private:
         std::unique_ptr<Fixture> fixture;
     };
-}  // testing::fixture::shared
+}  // testing::infra::shared
 
 #endif  // GTEST_INFRA_SHARED_HPP

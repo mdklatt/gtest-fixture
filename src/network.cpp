@@ -27,14 +27,14 @@ using std::string;
 using std::to_string;
 using std::unique_ptr;
 using std::vector;
-using testing::fixture::network::SOCKET_TIMEOUT;
-using testing::fixture::network::Bytes;
-using testing::fixture::network::TcpPortFixture;
-using testing::fixture::network::TcpClientFixture;
-using testing::fixture::network::TcpServerFixture;
-using testing::fixture::network::TcpClientHandler;
-using testing::fixture::network::TcpBufferHandler;
-using testing::fixture::network::TcpEchoHandler;
+using testing::infra::network::SOCKET_TIMEOUT;
+using testing::infra::network::Bytes;
+using testing::infra::network::TcpPortFixture;
+using testing::infra::network::TcpClientFixture;
+using testing::infra::network::TcpServerFixture;
+using testing::infra::network::TcpClientHandler;
+using testing::infra::network::TcpBufferHandler;
+using testing::infra::network::TcpEchoHandler;
 
 
 namespace {
@@ -191,7 +191,7 @@ Bytes read_socket(int sock) {
 }  // internal linkage
 
 
-float testing::fixture::network::SOCKET_TIMEOUT = 1;
+float testing::infra::network::SOCKET_TIMEOUT = 1;
 
 
 const unique_ptr<addrinfo, void (*)(addrinfo*)> TcpPortFixture::addr{create_address()};
@@ -286,7 +286,7 @@ void TcpBufferHandler::receive(int sock, const Bytes& data) {
 }
 
 
-void testing::fixture::network::TcpBufferHandler::clear() {
+void testing::infra::network::TcpBufferHandler::clear() {
     buffer.clear();
 }
 

@@ -2,7 +2,7 @@
 #include <fstream>
 #include <stdexcept>
 
-using namespace testing::fixture::stream;
+using namespace testing::infra::stream;
 using std::invalid_argument;
 using std::istream;
 using std::make_unique;

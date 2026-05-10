@@ -4,7 +4,7 @@
 #include <regex>
 #include <string>
 
-using namespace testing::fixture::tmpdir;
+using namespace testing::infra::tmpdir;
 using testing::UnitTest;
 using std::filesystem::create_directories;
 using std::filesystem::directory_iterator;

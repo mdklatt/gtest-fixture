@@ -14,8 +14,8 @@
 #include <vector>
 
 
-using namespace testing::fixture::network;
-using testing::fixture::shared::Shared;
+using namespace testing::infra::network;
+using testing::infra::shared::Shared;
 using testing::Test;
 using std::chrono::duration;
 using std::reverse;

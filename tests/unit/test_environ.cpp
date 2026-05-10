@@ -10,7 +10,7 @@
 #include <memory>
 #include <string>
 
-using namespace testing::fixture::environ;
+using namespace testing::infra::environ;
 using testing::Test;
 using std::getenv;
 using std::make_unique;

@@ -14,8 +14,8 @@
 #include <string>
 #include <sstream>
 
-using namespace testing::fixture::environ;
-using namespace testing::fixture::environ;
+using namespace testing::infra::environ;
+using namespace testing::infra::environ;
 using testing::Test;
 using std::cin;
 using std::cout;
@@ -31,14 +31,14 @@ using std::string;
  */
 class FixtureTest: public Test {
 protected:
-    testing::fixture::environ::EnvironFixture environ;
-    testing::fixture::tmpdir::TmpDirFixture tmpdir;
+    testing::infra::environ::EnvironFixture environ;
+    testing::infra::tmpdir::TmpDirFixture tmpdir;
     istringstream stdin;
     ostringstream stdout;
 
 private:
-    testing::fixture::stream::InputFixture input{cin, stdin};
-    testing::fixture::stream::OutputFixture output{cout, stdout};
+    testing::infra::stream::InputFixture input{cin, stdin};
+    testing::infra::stream::OutputFixture output{cout, stdout};
 };
 
 
