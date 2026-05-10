@@ -18,40 +18,40 @@ using std::string;
 
 
 /**
- * Test suite for the EnvironFixture class.
+ * Test suite for the Environ class.
  */
-class EnvironFixtureTest: public Test {
+class EnvironTest: public Test {
 protected:
-    EnvironFixture environ;
+    Environ environ;
 };
 
 
 /**
- * Test the EnvironFixture::get() method.
+ * Test the Environ::get() method.
  */
-TEST_F(EnvironFixtureTest, get) {
-    EXPECT_EQ(getenv("PWD"), EnvironFixture::get("PWD"));
-    EXPECT_EQ("none", EnvironFixture::get("NONE", "none"));
+TEST_F(EnvironTest, get) {
+    EXPECT_EQ(getenv("PWD"), Environ::get("PWD"));
+    EXPECT_EQ("none", Environ::get("NONE", "none"));
 }
 
 
 /**
- * Test the EnvironFixture::set() method.
+ * Test the Environ::set() method.
  */
-TEST_F(EnvironFixtureTest, set) {
+TEST_F(EnvironTest, set) {
     static const string value{"TEST"};
     for (const auto& name: {"HOME", "NEW"}) {
         // Test an existing and new variable.
         environ.set(name, value);
-        EXPECT_EQ(value, EnvironFixture::get(name));
+        EXPECT_EQ(value, Environ::get(name));
     }
 }
 
 
 /**
- * Test the EnvironFixture::unset() method.
+ * Test the Environ::unset() method.
  */
-TEST_F(EnvironFixtureTest, unset) {
+TEST_F(EnvironTest, unset) {
     environ.set("TESTENV", "TRUE");
     environ.unset("TESTENV");
     EXPECT_FALSE(getenv("TESTENV"));
@@ -59,13 +59,13 @@ TEST_F(EnvironFixtureTest, unset) {
 
 
 /**
- * Test EnvironFixture destructor.
+ * Test Environ destructor.
  */
-TEST_F(EnvironFixtureTest, destruct) {
+TEST_F(EnvironTest, destruct) {
     // Ensure that all changes are rolled back when the fixture is destroyed.
-    const auto home{EnvironFixture::get("HOME")};
-    const auto pwd{EnvironFixture::get("PWD")};
-    auto tmpenv{make_unique<EnvironFixture>()};
+    const auto home{Environ::get("HOME")};
+    const auto pwd{Environ::get("PWD")};
+    auto tmpenv{make_unique<Environ>()};
     tmpenv->set("TESTENV");  // added
     tmpenv->set("PWD", "NONE");  // changed
     tmpenv->unset("HOME");

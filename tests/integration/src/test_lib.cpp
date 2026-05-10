@@ -27,11 +27,11 @@ using std::string;
 
 
 /**
- * Test fixture for validating fixture mixin classes.
+ * Test fixture for validating gtest-infra modules.
  */
 class FixtureTest: public Test {
 protected:
-    testing::infra::environ::EnvironFixture environ;
+    testing::infra::environ::Environ environ;
     testing::infra::tmpdir::TmpDirFixture tmpdir;
     istringstream stdin;
     ostringstream stdout;
@@ -43,7 +43,7 @@ private:
 
 
 /**
- * Test the EvironFixture class.
+ * Test the Environ class.
  */
 TEST_F(FixtureTest, environ) {
     environ.set("FIXTURETEST", "1");

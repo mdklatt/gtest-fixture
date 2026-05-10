@@ -13,8 +13,8 @@ Overview
 
 Test fixture mixins to add capabilities to `GoogleTest`_ tests.
 
-EnvironFixture
---------------
+Environ
+-------
 
 Modify environment variables for testing. Changes will be rolled back when the
 fixture is destroyed. Note that changes to the environment are *not*
@@ -66,7 +66,7 @@ non-static member of a ``Test`` class or inside a ``TEST*`` function.
 
     class FixtureTest: public testing::Test {
     protected:
-        EnvironFixture environ;
+        Environ environ;
     };
 
     TEST_F(FixtureTest, env_true) {
@@ -84,11 +84,11 @@ done by wrapping a fixture in the ``Shared<>`` adaptor and making it a static
 member of a ``Test`` class. Clean up is done in the ``TearDownTestSuite``
 method. `Global resource sharing`_ is similar.
 
-.. code-block:: c++
+.. code-block:: cpp
 
     class SharedFixtureTest: public testing::Test {
     protected:
-        static Shared<EnvironFixture>> environ;
+        static Shared<Environ>> environ;
 
         static void TearDownTestSuite() {
             environ.teardown();

@@ -11,7 +11,7 @@
 #include <stdexcept>
 
 using namespace testing::infra::shared;
-using testing::infra::environ::EnvironFixture;
+using testing::infra::environ::Environ;
 using testing::Test;
 using std::getenv;
 using std::make_unique;
@@ -23,7 +23,7 @@ using std::string;
  */
 class SharedFixtureTest: public Test {
 protected:
-    static Shared<EnvironFixture> environ;
+    static Shared<Environ> environ;
 
     /**
      * Test suite teardown called after last test.
@@ -34,7 +34,7 @@ protected:
 };
 
 
-Shared<EnvironFixture> SharedFixtureTest::environ;
+Shared<Environ> SharedFixtureTest::environ;
 
 
 /**

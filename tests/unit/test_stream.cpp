@@ -21,7 +21,7 @@ using std::unique_ptr;
 
 
 /**
- * Test suite for the EnvironFixture class.
+ * Test suite for the Environ class.
  */
 class InputFixtureTest: public Test {
 protected:

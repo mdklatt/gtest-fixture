@@ -16,17 +16,17 @@ namespace testing::infra::environ {
 /**
  * Test fixture for managing environment variables.
  */
-class EnvironFixture {
+class Environ {
 public:
     /**
      * Default constructor.
      */
-    EnvironFixture() = default;
+    Environ() = default;
 
     /**
      * Roll back changes to the environment.
      */
-    ~EnvironFixture();
+    ~Environ();
 
     /**
      * Get the value of an environment variable.
@@ -35,7 +35,7 @@ public:
      *
      * @param name
      * @param fallback
-     * @return
+     * @return variable value
      */
     static std::string get(const std::string& name, const std::string& fallback = "");
 
@@ -62,7 +62,7 @@ public:
      */
     void unset(const std::string& name);
 
-    EnvironFixture(const EnvironFixture&) = delete;
+    Environ(const Environ&) = delete;
 
 private:
     static std::map<std::string, std::unique_ptr<char>> global;

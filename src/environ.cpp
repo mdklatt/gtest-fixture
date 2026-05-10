@@ -10,10 +10,10 @@ using std::snprintf;
 using std::invalid_argument;
 
 
-std::map<std::string, std::unique_ptr<char>> EnvironFixture::global;
+std::map<std::string, std::unique_ptr<char>> Environ::global;
 
 
-EnvironFixture::~EnvironFixture() {
+Environ::~Environ() {
     for (auto& item: local) {
         // Roll back all local environment changes.
         auto it{global.find(item.first)};
@@ -31,13 +31,13 @@ EnvironFixture::~EnvironFixture() {
 }
 
 
-string EnvironFixture::get(const std::string &name, const std::string& fallback) {
+string Environ::get(const std::string &name, const std::string& fallback) {
     const auto* value{std::getenv(name.c_str())};
     return value ? value : fallback;
 }
 
 
-void EnvironFixture::set(const std::string& name, const std::string& value) {
+void Environ::set(const std::string& name, const std::string& value) {
     save(name);
     const auto env{str(name, value)};
     local[name].reset(env);
@@ -45,14 +45,14 @@ void EnvironFixture::set(const std::string& name, const std::string& value) {
 }
 
 
-void EnvironFixture::unset(const std::string& name) {
+void Environ::unset(const std::string& name) {
     save(name);
     local[name] = nullptr;
     unsetenv(name.c_str());
 }
 
 
-char* EnvironFixture::str(const std::string &name, const std::string& value) {
+char* Environ::str(const std::string &name, const std::string& value) {
     const size_t strlen{name.length() + value.length() + 2};
     auto* env{new char[strlen]};
     snprintf(env, strlen, "%s=%s", name.c_str(), value.c_str());
@@ -60,7 +60,7 @@ char* EnvironFixture::str(const std::string &name, const std::string& value) {
 }
 
 
-void EnvironFixture::save(const std::string &name) {
+void Environ::save(const std::string &name) {
     if (local.find(name) != local.end()) {
         // Don't save variable that has already been modified.
         return;
