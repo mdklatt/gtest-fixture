@@ -227,7 +227,7 @@ private:
 /**
  * Run a simple TCP server for clients under test.
  */
-class TcpServerFixture {
+class TcpServer {
 public:
     /**
      * Construct a new instance.
@@ -236,12 +236,12 @@ public:
      *
      * @return listening port
      */
-    explicit TcpServerFixture(TcpClientHandler& handler, in_port_t port=0);
+    explicit TcpServer(TcpClientHandler& handler, in_port_t port=0);
 
     /**
      * Destruct an instance.
      */
-    virtual ~TcpServerFixture();
+    virtual ~TcpServer();
 
     /**
      * Create a client socket for communicating with the fixture.
@@ -275,7 +275,7 @@ public:
     void stop();
 
     // Prohibited operations.
-    TcpServerFixture(const TcpServerFixture&) = delete;
+    TcpServer(const TcpServer&) = delete;
 
 private:
     TcpClientHandler* handler{nullptr};

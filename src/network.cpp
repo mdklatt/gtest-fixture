@@ -31,7 +31,7 @@ using testing::infra::network::SOCKET_TIMEOUT;
 using testing::infra::network::Bytes;
 using testing::infra::network::TcpPort;
 using testing::infra::network::TcpClient;
-using testing::infra::network::TcpServerFixture;
+using testing::infra::network::TcpServer;
 using testing::infra::network::TcpClientHandler;
 using testing::infra::network::TcpBufferHandler;
 using testing::infra::network::TcpEchoHandler;
@@ -324,22 +324,22 @@ void TcpEchoHandler::clear() {
 }
 
 
-TcpServerFixture::TcpServerFixture(TcpClientHandler& handler, in_port_t port):
+TcpServer::TcpServer(TcpClientHandler& handler, in_port_t port):
     handler{&handler},
     addr{create_address(port)} {}
 
 
-TcpServerFixture::~TcpServerFixture() {
+TcpServer::~TcpServer() {
     stop();
 }
 
 
-in_port_t TcpServerFixture::port() const {
+in_port_t TcpServer::port() const {
     return listen_port;
 }
 
 
-int TcpServerFixture::client() const {
+int TcpServer::client() const {
     auto port_addr{create_address(listen_port)};
     auto sock{create_socket(port_addr.get())};
     connect_socket(sock, port_addr.get());
@@ -347,7 +347,7 @@ int TcpServerFixture::client() const {
 }
 
 
-void TcpServerFixture::start() {
+void TcpServer::start() {
     if (not stopped) {
         return;
     }
@@ -363,7 +363,7 @@ void TcpServerFixture::start() {
 }
 
 
-void TcpServerFixture::stop() {
+void TcpServer::stop() {
     if (stopped) {
         return;
     }
@@ -377,7 +377,7 @@ void TcpServerFixture::stop() {
 }
 
 
-void TcpServerFixture::poll() {
+void TcpServer::poll() {
     pollfd listener{};
     listener.fd = listen_sock;
     listener.events = POLLIN;
@@ -427,7 +427,7 @@ void TcpServerFixture::poll() {
 }
 
 
-int TcpServerFixture::accept(int sock) {
+int TcpServer::accept(int sock) {
     sockaddr_storage addr{};
     socklen_t len{sizeof(addr)};
     auto client_sock{::accept(sock, reinterpret_cast<sockaddr*>(&addr), &len)};

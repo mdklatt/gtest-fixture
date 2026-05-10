@@ -84,7 +84,7 @@ protected:
     }
 
     TcpEchoHandler handler;
-    TcpServerFixture server{handler};
+    TcpServer server{handler};
 };
 
 
@@ -110,21 +110,21 @@ TEST_F(TcpClientTest, send_text) {
 
 
 /**
- * Test suite for the TcpServerFixture class.
+ * Test suite for the TcpServer class.
  */
-class TcpServerFixtureTest: public Test {
+class TcpServerTest: public Test {
 protected:
     TcpEchoHandler handler;
-    TcpServerFixture fixture{handler};
+    TcpServer fixture{handler};
 };
 
 
 /**
- * Test the TcpServerFixture::port() method.
+ * Test the TcpServer::port() method.
  */
-TEST_F(TcpServerFixtureTest, port) {
+TEST_F(TcpServerTest, port) {
     static const auto port{8974};  // beware of existing usages
-    TcpServerFixture fixture{handler, port};
+    TcpServer fixture{handler, port};
     EXPECT_EQ(0, fixture.port());  // not running yet
     fixture.start();
     EXPECT_EQ(port, fixture.port());
@@ -132,9 +132,9 @@ TEST_F(TcpServerFixtureTest, port) {
 
 
 /**
- * Test TcpServerFixture communication.
+ * Test TcpServer communication.
  */
-TEST_F(TcpServerFixtureTest, comm) {
+TEST_F(TcpServerTest, comm) {
     fixture.start();
     EXPECT_NE(fixture.port(), 0);
     auto client{fixture.client()};  // caller must shutdown()
@@ -155,8 +155,8 @@ TEST_F(TcpServerFixtureTest, comm) {
 /**
  * Test TcpPort with the Shared<> adaptor.
  */
-TEST_F(TcpServerFixtureTest, shared) {
-    Shared<TcpServerFixture> fixture{handler};
+TEST_F(TcpServerTest, shared) {
+    Shared<TcpServer> fixture{handler};
     EXPECT_EQ(fixture->port(), 0);  // not started
 }
 
