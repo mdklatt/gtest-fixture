@@ -23,14 +23,14 @@ using std::string;
 using std::to_string;
 
 
-const std::filesystem::path TmpDirFixture::root_dir{temp_directory_path() / "gtest"};
+const std::filesystem::path TmpDir::root_dir{temp_directory_path() / "gtest"};
 
-std::filesystem::path TmpDirFixture::run_root;  // lazy initialization
+std::filesystem::path TmpDir::run_root;  // lazy initialization
 
-size_t TmpDirFixture::test_count{0};
+size_t TmpDir::test_count{0};
 
 
-TmpDirFixture::TmpDirFixture() {
+TmpDir::TmpDir() {
     const auto test{UnitTest::GetInstance()->current_test_info()};
     test_root = std::filesystem::path{test->test_suite_name()} / test->name();
     run_path(test_root, true);
@@ -38,7 +38,7 @@ TmpDirFixture::TmpDirFixture() {
 }
 
 
-TmpDirFixture::~TmpDirFixture() {
+TmpDir::~TmpDir() {
     // Leave the most recent run directories intact to allow additional action
     // to be taken with test output, but remove older run directories.
     if (--test_count > 0) {
@@ -57,7 +57,7 @@ TmpDirFixture::~TmpDirFixture() {
 }
 
 
-std::filesystem::path TmpDirFixture::run_path(const std::string &subdir, bool create) {
+std::filesystem::path TmpDir::run_path(const std::string &subdir, bool create) {
     if (run_root.empty()) {
         make_root();
     }
@@ -69,13 +69,13 @@ std::filesystem::path TmpDirFixture::run_path(const std::string &subdir, bool cr
 }
 
 
-std::filesystem::path TmpDirFixture::test_path(const std::string &subdir, bool create) const {
+std::filesystem::path TmpDir::test_path(const std::string &subdir, bool create) const {
     const auto path{subdir.empty() ? test_root : test_root / subdir};  // no trailing slash
     return run_path(path, create);
 }
 
 
-void TmpDirFixture::make_root() {
+void TmpDir::make_root() {
     const auto root{temp_directory_path() / "gtest"};
     auto run_dirs{list_dirs()};
     const auto last_run{run_dirs.empty() ? 0 : prev(run_dirs.end())->first};
@@ -97,7 +97,7 @@ void TmpDirFixture::make_root() {
 }
 
 
-map<size_t, std::filesystem::path> TmpDirFixture::list_dirs() {
+map<size_t, std::filesystem::path> TmpDir::list_dirs() {
     map<size_t, std::filesystem::path> run_dirs;
     if (not is_directory(root_dir)) {
         return run_dirs;

@@ -36,7 +36,7 @@ Compatibility with C streams is system-dependent.
     std::printf("output to STDOUT");  // might or might not be captured
 
 
-TmpDirFixture
+TmpDir
 -------------
 
 Provide tmp directories for testing. A numbered directory will be created for
@@ -44,7 +44,7 @@ each test run, and every test within that run will have its own dedicated
 subdirectory. Run directories are *not* removed on exit and will be
 available for inspection until the run directory is recycled.
 
-A ``TmpDirFixture`` can only be instantiated at test scope, so it should not be
+A ``TmpDir`` can only be instantiated at test scope, so it should not be
 used with the ``Shared<>`` adaptor. However, the static ``run_path()`` method
 can be used to create a shared directory for multiple tests across one or more
 test suites.

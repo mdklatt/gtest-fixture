@@ -13,9 +13,9 @@
 namespace testing::infra::tmpdir {
 
 /**
- * Fixture for managing temporary directories.
+ * Temporary directory
  */
-class TmpDirFixture {
+class TmpDir {
 public:
     /**
      * Get a tmp directory for the current run.
@@ -40,15 +40,15 @@ public:
     /**
      * Default constructor.
      *
-     * TmpDirFixture instances can only be created within a text context, i.e.
+     * TmpDir instances can only be created within a text context, i.e.
      * as a non-static member of a test suite or inside a TEST* function.
      */
-    TmpDirFixture();
+    TmpDir();
 
     /**
      * Destructor.
      */
-    ~TmpDirFixture();
+    ~TmpDir();
 
     /**
      * Get a tmp directory for the current test.

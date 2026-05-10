@@ -32,7 +32,7 @@ using std::string;
 class FixtureTest: public Test {
 protected:
     testing::infra::environ::Environ environ;
-    testing::infra::tmpdir::TmpDirFixture tmpdir;
+    testing::infra::tmpdir::TmpDir tmpdir;
     istringstream stdin;
     ostringstream stdout;
 
@@ -72,7 +72,7 @@ TEST_F(FixtureTest, output) {
 
 
 /**
- * TEst the TmpDirFixture class.
+ * TEst the TmpDir class.
  */
 TEST_F(FixtureTest, tmpdir) {
     ofstream stream{tmpdir.test_path() / "test.txt"};
