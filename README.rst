@@ -2,10 +2,11 @@
 gtest-infra
 ###########
 
-|c++17|
-|cmake|
+|release|
 |license|
 |tests|
+|c++17|
+|cmake|
 
 Overview
 ========
@@ -423,17 +424,18 @@ Project Layout
     └── LICENSE                       # project license
 
 
-
-.. |c++17| image:: https://img.shields.io/static/v1?label=c%2B%2B&message=17&color=informational
-   :alt: C++17
-.. |cmake| image:: https://img.shields.io/static/v1?label=cmake&message=3.16&color=informational
-   :alt: CMake 3.16
+.. |release| image:: https://img.shields.io/github/v/release/mdklatt/gtest-infra?sort=semver
+    :alt: GitHub release (latest SemVer)
 .. |license| image:: https://img.shields.io/github/license/mdklatt/gtest-infra
    :alt: MIT License
    :target: `MIT License`_
 .. |tests| image:: https://github.com/mdklatt/gtest-infra/actions/workflows/test.yml/badge.svg
    :alt: CI Test
    :target: `GitHub Actions`_
+.. |c++17| image:: https://img.shields.io/static/v1?label=c%2B%2B&message=17&color=informational
+   :alt: C++17
+.. |cmake| image:: https://img.shields.io/static/v1?label=cmake&message=3.16&color=informational
+   :alt: CMake 3.16
 
 .. _CMake: https://cmake.org/cmake/help/latest/
 .. _CTest: https://cmake.org/cmake/help/latest/manual/ctest.1.html
