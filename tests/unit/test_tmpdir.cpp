@@ -16,7 +16,7 @@ using std::string;
 
 
 /**
- * Test suite for the TmpDir class.
+ * Fixture for the TmpDir class test suite.
  */
 class TmpDirTest: public Test {
 protected:

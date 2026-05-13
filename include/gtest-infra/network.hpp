@@ -106,7 +106,7 @@ private:
 
 
 /**
- * Interface for handling incoming requests to TcpServerFixture.
+ * Interface for handling incoming requests to TcpServer.
  */
 class TcpClientHandler {
 public:

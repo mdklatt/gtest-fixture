@@ -14,6 +14,8 @@ namespace testing::infra::shared {
     /**
      * Adaptor for sharing a fixture across multiple tests.
      *
+     * <https://google.github.io/googletest/advanced.html#sharing-resources-between-tests-in-the-same-test-suite>
+     * <https://google.github.io/googletest/advanced.html#global-set-up-and-tear-down>
      * @tparam Infra regular testing::infra class
      */
     template <typename Infra>
@@ -24,7 +26,7 @@ namespace testing::infra::shared {
          */
         template <typename ...Args>
         explicit Shared(Args&&... args) :
-            fixture{std::make_unique<Infra>(args...)} {}
+            target{std::make_unique<Infra>(args...)} {}
 
         /**
          * Tear down the underlying fixture.
@@ -32,7 +34,7 @@ namespace testing::infra::shared {
          * This must be called in the `TearDown` method of the desired scope.
          */
         void teardown() {
-            fixture = nullptr;
+            target = nullptr;  // forces target destructor to be called
         }
 
         /**
@@ -41,24 +43,26 @@ namespace testing::infra::shared {
          * @return instance pointer
          */
         Infra const* operator->() const {
-            if (not fixture) {
-                throw std::logic_error{"invalid fixture pointer"};
+            if (not target) {
+                // This can happen if teardown() was called.
+                throw std::logic_error{"instance is null"};
             }
-            return fixture.get();
+            return target.get();
         }
 
         /** @overload */
         Infra* operator->() {
-            if (not fixture) {
-                throw std::logic_error{"invalid fixture pointer"};
+            if (not target) {
+                // This can happen if teardown() was called.
+                throw std::logic_error{"instance is null"};
             }
-            return fixture.get();
+            return target.get();
         }
 
         Shared(const Shared&) = delete;
 
     private:
-        std::unique_ptr<Infra> fixture;
+        std::unique_ptr<Infra> target;
     };
 }  // testing::infra::shared
 

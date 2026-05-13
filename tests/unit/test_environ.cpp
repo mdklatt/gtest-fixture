@@ -18,7 +18,7 @@ using std::string;
 
 
 /**
- * Test suite for the Environ class.
+ * Test fixture for the Environ class test suite.
  */
 class EnvironTest: public Test {
 protected:

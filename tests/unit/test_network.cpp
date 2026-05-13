@@ -25,7 +25,7 @@ using std::vector;
 
 
 /**
- * Test suite for the TcpPort class.
+ * Fixture for the TcpPort class test suite.
  */
 class TcpPortTest: public Test {
 protected:
@@ -72,7 +72,7 @@ TEST_F(TcpPortTest, shared) {
 
 
 /**
- * Test suite for the TcpClient class
+ * Fixture for the TcpClient class test suite.
  */
 class TcpClientTest: public Test {
 protected:
@@ -162,7 +162,7 @@ TEST_F(TcpServerTest, shared) {
 
 
 /**
- * Test suite for the TcpBufferHandler class.
+ * Fixture for the TcpBufferHandler class test suite.
  */
 class TcpBufferHandlerTest: public Test {
 protected:
@@ -214,7 +214,7 @@ TEST_F(TcpBufferHandlerTest, text) {
 
 
 /**
- * Test suite for the TcpEchoHandler class.
+ * Fixture for the TcpEchoHandler class for the test suite.
  */
 class TcpEchoHandlerTest: public Test {
 protected:

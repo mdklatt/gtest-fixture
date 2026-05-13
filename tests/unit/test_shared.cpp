@@ -19,7 +19,7 @@ using std::string;
 
 
 /**
- * Test suite for the Shared<> fixture adaptor.
+ * Fixture for the Shared<> fixture adaptor test suite.
  */
 class SharedFixtureTest: public Test {
 protected:

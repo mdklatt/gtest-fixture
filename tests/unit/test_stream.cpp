@@ -21,7 +21,7 @@ using std::unique_ptr;
 
 
 /**
- * Test suite for the Environ class.
+ * Fixture for the InputStream class test suite.
  */
 class InputStreamTest: public Test {
 protected:
@@ -73,7 +73,7 @@ TEST_F(InputStreamTest, shared) {
 
 
 /**
- * Test suite for the OutputStream class.
+ * Fixture for the OutputStream class test suite.
  */
 class OutputStreamTest: public Test {
 protected:
