@@ -419,7 +419,8 @@ Project Layout
     ├── requirements-env.txt          # Python requirements for the dev environment
     ├── version.txt                   # project version
     ├── conanfile.py                  # Conan configuration
-    ├── vcpkg.json                    # vcpkg configuration for consumers
+    ├── vcpkg.json.in                 # template for vcpkg.json generation
+    ├── vcpkg.json                    # vcpkg configuration for consumers (generated)
     ├── .gitignore                    # Git ignore file
     └── LICENSE                       # project license
 

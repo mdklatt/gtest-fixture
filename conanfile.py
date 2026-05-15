@@ -30,6 +30,7 @@ class ProjectRecipe(ConanFile):
     exports_sources = [
         "version.txt",
         "CMakeLists.txt",
+        "vcpkg.json.in",
         "src/*",
         "include/*",
         "cmake/*",
