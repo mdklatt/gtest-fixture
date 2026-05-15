@@ -18,7 +18,7 @@ project(GTestInfra
     LANGUAGES CXX
 )
 
-list(INSERT CMAKE_MODULE_PATH 0 ${PROJECT_SOURCE_DIR}/cmake ${CMAKE_CURRENT_BINARY_DIR}/conan)
+list(INSERT CMAKE_MODULE_PATH 0 ${PROJECT_SOURCE_DIR}/cmake)
 include(DebugASanBuildType)
 
 option(BUILD_DOCS "Build documentation" OFF)
