@@ -60,7 +60,7 @@ class ProjectRecipe(ConanFile):
             "transitive_headers": False,
             "transitive_libs": False
         }
-        self.requires("gtest/[>=1.14.0 <1.15.0]", **private)
+        self.requires("gtest/[>=1.14.0 <1.19.0]", **private)
         return
 
     def layout(self):

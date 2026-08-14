@@ -11,8 +11,6 @@ else()
     # All default search locations are disabled to ensure that only the test
     # installation is found.
     message(STATUS "Testing installed library at ${path}")
-#    list(APPEND CMAKE_MODULE_PATH "${CMAKE_PREFIX_PATH}/cmake")
-#    message(STATUS "CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
     find_package(GTestInfra REQUIRED)
 endif()
 

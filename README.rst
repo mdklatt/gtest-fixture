@@ -345,14 +345,24 @@ CMake Integration
 GoogleTest Compatibility
 ------------------------
 
-While the library is intended to be used with *GoogleTest*,  most of the
-module do not have any *GoogleTest* dependencies and could be used with any
+While the library is intended to be used with *GoogleTest*, most of the
+modules do not have any *GoogleTest* dependencies and could be used with any
 test framework. The exception is the ``tmpdir`` module, which uses the
-`GoogleTest`_ API to get the current test name. This creates a build
-dependency on *gtest*. *gtest-target* does not specify a pinned version
-of *GoogleTest*, just a minimum (see ``conanfile.py``). *GoogleTest* does not
-use Sematic Versioning, so beware that even a minor version change may break
-backwards compatibility.
+`GoogleTest`_ API to get the current test name. This creates a ``gtest``
+dependency when building *gtest-infra*, but not when using it.
+
+Projects that use *GoogleTest* and *gtest-infra* together should pick a
+mutually compatible version. *GoogleTest* does not use Sematic Versioning, so
+beware that even a minor version change may break backwards compatibility. The
+version range specified in *conanfile.py* is known work with *gtest-infra*.
+Projects that want to try a new version can force this in their own
+*conanfile*:
+
+.. code-block:: python
+
+    def requirements(self):
+        self.requires("gtest-infra/1.0.0")
+        self.requires("gtest/2.0.0", override=True)
 
 
 

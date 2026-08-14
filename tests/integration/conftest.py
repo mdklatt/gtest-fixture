@@ -50,7 +50,7 @@ def requires() -> list[str]:
 
     :return: requirements
     """
-    return ["gtest/1.14.0"]
+    return ["gtest/1.18.0"]  # test against the latest version
 
 
 @pytest.fixture(scope="module")
