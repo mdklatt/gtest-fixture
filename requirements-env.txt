@@ -1,4 +1,5 @@
 # Requirements for the local development environment.
 conan>=2.7.0,<3
 jsonschema>=4.26.0,<5
-pytest>=7.3.2,<8
+pytest>=8.4.2,<9
+referencing>=0.37.0,<1
